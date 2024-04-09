@@ -1,8 +1,8 @@
-using KomoraMVC.Models;
+using Komora.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace KomoraMVC.Controllers
+namespace KomoraMVC.Areas.User.Controllers
 {
     public class HomeController : Controller
     {

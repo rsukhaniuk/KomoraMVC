@@ -1,4 +1,4 @@
-namespace KomoraMVC.Models
+namespace Komora.Models
 {
     public class ErrorViewModel
     {

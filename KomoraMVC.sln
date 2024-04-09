@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KomoraMVC", "KomoraMVC\KomoraMVC.csproj", "{2F274B57-0B31-4D5F-9B9B-F85B6CB59AB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KomoraMVC", "KomoraMVC\KomoraMVC.csproj", "{2F274B57-0B31-4D5F-9B9B-F85B6CB59AB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komora.DataAccess", "Komora.DataAccess\Komora.DataAccess.csproj", "{CD771FE7-6601-4EBE-A98A-4622F7AF3BED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komora.Models", "Komora.Models\Komora.Models.csproj", "{35B66613-09AC-4129-8E20-B0BD6BDA6E6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Komora.Utility", "Komora.Utility\Komora.Utility.csproj", "{273944D3-93F2-421F-8722-BC4E42CC22C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{2F274B57-0B31-4D5F-9B9B-F85B6CB59AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F274B57-0B31-4D5F-9B9B-F85B6CB59AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F274B57-0B31-4D5F-9B9B-F85B6CB59AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD771FE7-6601-4EBE-A98A-4622F7AF3BED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD771FE7-6601-4EBE-A98A-4622F7AF3BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD771FE7-6601-4EBE-A98A-4622F7AF3BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD771FE7-6601-4EBE-A98A-4622F7AF3BED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35B66613-09AC-4129-8E20-B0BD6BDA6E6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35B66613-09AC-4129-8E20-B0BD6BDA6E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35B66613-09AC-4129-8E20-B0BD6BDA6E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35B66613-09AC-4129-8E20-B0BD6BDA6E6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{273944D3-93F2-421F-8722-BC4E42CC22C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{273944D3-93F2-421F-8722-BC4E42CC22C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{273944D3-93F2-421F-8722-BC4E42CC22C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{273944D3-93F2-421F-8722-BC4E42CC22C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
