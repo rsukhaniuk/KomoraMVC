@@ -93,42 +93,51 @@ namespace Komora.Areas.User.Controllers
         /// </summary>
         /// <param name="id">id of the category to be deleted</param>
         /// <returns></returns>
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
+        //public IActionResult Delete(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var category = _unitOfWork.Category.Get(c => c.Id == id);
+        //    var category = _unitOfWork.Category.Get(c => c.Id == id);
 
-            if (category == null)
-            {
-                return NotFound();
-            }
+        //    if (category == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(category);
-        }
+        //    return View(category);
+        //}
 
         /// <summary>
-        /// HttpPost method that deletes a category
+        /// HttpDelete method that deletes a category
         /// </summary>
         /// <param name="id">id of the category to be deleted</param>
         /// <returns></returns>
-        [HttpPost]
-        [ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
+        [HttpDelete]
+        public IActionResult Delete(int? id)
         {
             var categotyToBeDeleted = _unitOfWork.Category.Get(c => c.Id == id);
 
             if (categotyToBeDeleted == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Error while deleting" });
             }
+
             _unitOfWork.Category.Remove(categotyToBeDeleted);
             _unitOfWork.Save();
-            TempData["success"] = "Category deleted  successfully.";
-            return RedirectToAction("Index");
+
+
+            return Json(new { success = true, message = "Delete Successful" });
+            //return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            return Json(new { data = objCategoryList });
         }
     }
 }
