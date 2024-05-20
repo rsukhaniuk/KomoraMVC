@@ -1,0 +1,30 @@
+﻿@model List<Unit>
+
+
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-black">Unit List</h2>
+        </div>
+        <div class="col-6 text-end">
+            <a asp-controller="Unit" asp-action="Upsert" class="btn btn-success float-right">Create</a>
+        </div>
+    </div>
+
+
+
+
+    <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/unit.js"></script>
+}

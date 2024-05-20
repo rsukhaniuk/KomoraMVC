@@ -24,6 +24,11 @@ namespace Komora.DataAccess.Data
         /// </summary>
         public DbSet<Category> Categories { get; set; }
 
+        /// <summary>
+        /// Property that represents the Units table
+        /// </summary>
+        public DbSet<Unit> Units { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

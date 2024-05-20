@@ -24,7 +24,7 @@ namespace Komora.DataAccess.Repository
         {
             _db = db;
             Category = new CategoryRepository(_db);
-
+            Unit = new UnitRepository(_db);
 
         }
         
@@ -32,7 +32,12 @@ namespace Komora.DataAccess.Repository
         /// Property that returns the CategoryRepository
         /// </summary>
         public ICategoryRepository Category { get; private set; }
-        
+
+        /// <summary>
+        /// Property that returns the UnitRepository
+        /// </summary>
+        public IUnitRepository Unit { get; private set; }
+
         /// <summary>
         /// Method that disposes the database context
         /// </summary>

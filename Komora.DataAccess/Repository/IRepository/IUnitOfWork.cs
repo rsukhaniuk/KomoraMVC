@@ -12,7 +12,7 @@ namespace Komora.DataAccess.Repository.IRepository
     public interface IUnitOfWork
     {
         ICategoryRepository Category { get; }
-       
+        IUnitRepository Unit { get; }
         void Save();
     }
 }

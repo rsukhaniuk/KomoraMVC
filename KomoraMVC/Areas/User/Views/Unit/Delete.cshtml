@@ -1,0 +1,53 @@
+﻿@model Unit
+
+<form method="post">
+    <div class="border p-3 mt-4">
+
+        <div class="row pb-2">
+            <h4>Delete Unit</h4>
+            <hr />
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label pb-1"></label>
+            <input asp-for="Name" class="form-control" disabled />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-danger form-control" onsubmit="displayAlert()" style="height:50px">Delete</button>
+            </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Unit" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                    Unit List
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function displayAlert() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+
+                        type: 'DELETE',
+                        success: function (data) {
+                            dataTable.ajax.reload();
+                            toastr.success(data.message);
+                        }
+                    })
+                }
+            })
+        }
+    </script>
+}
