@@ -26,7 +26,7 @@ namespace Komora.DataAccess.Repository
             Category = new CategoryRepository(_db);
             Unit = new UnitRepository(_db);
             Product = new ProductRepository(_db);
-
+            Recipe = new RecipeRepository(_db);
         }
         
         /// <summary>
@@ -43,6 +43,11 @@ namespace Komora.DataAccess.Repository
         /// Property that returns the IProductRepository
         /// </summary>
         public IProductRepository Product { get; private set; }
+
+        /// <summary>
+        /// Property that returns the IRecipeRepository
+        /// </summary>
+        public IRecipeRepository Recipe { get; private set; }
 
         /// <summary>
         /// Method that disposes the database context

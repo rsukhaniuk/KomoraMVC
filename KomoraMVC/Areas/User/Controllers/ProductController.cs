@@ -33,7 +33,7 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var ProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit");
+            var ProductList = _unitOfWork.Product.GetAll();
             return View(ProductList);
         }
 
