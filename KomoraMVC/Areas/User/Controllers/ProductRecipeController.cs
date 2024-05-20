@@ -10,21 +10,19 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace Komora.Areas.User.Controllers
 {
     /// <summary>
-    /// Controller that manages the Product model
+    /// Controller that manages the ProductRecipe model
     /// </summary>
-    public class ProductController : Controller
+    public class ProductRecipeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _hostingEnvironment;
 
         /// <summary>
         /// Constructor that initializes the unitOfWork
         /// </summary>
         /// <param name="unitOfWork"></param>
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment)
+        public ProductRecipeController(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <summary>
@@ -33,8 +31,8 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var ProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit");
-            return View(ProductList);
+            var ProductRecipeList = _unitOfWork.ProductRecipe.GetAll(includeProperties: "Recipe,Product,Unit");
+            return View(ProductRecipeList);
         }
 
         /// <summary>
@@ -48,7 +46,12 @@ namespace Komora.Areas.User.Controllers
         /// </returns>
         public IActionResult Upsert(int? id)
         {
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            IEnumerable<SelectListItem> RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+            IEnumerable<SelectListItem> ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
             {
                 Text = i.Name,
                 Value = i.Id.ToString()
@@ -58,22 +61,23 @@ namespace Komora.Areas.User.Controllers
                 Text = i.Name,
                 Value = i.Id.ToString()
             });
-            ProductVM productVM = new ProductVM()
+            ProductRecipeVM productRecipeVM = new ProductRecipeVM()
             {
-                CategoryList = CategoryList,
+                RecipeList = RecipeList,
+                ProductList = ProductList,
                 UnitList = UnitList,
-                Product = new Product()
+                ProductRecipe = new ProductRecipe()
 
             };
 
             if (id == null || id == 0)
             {
-                return View(productVM);
+                return View(productRecipeVM);
             }
             else
             {
-                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
-                return View(productVM);
+                productRecipeVM.ProductRecipe = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
+                return View(productRecipeVM);
             }
         }
 
@@ -88,50 +92,31 @@ namespace Komora.Areas.User.Controllers
         /// </param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Upsert(ProductVM obj, IFormFile? file)
+        public IActionResult Upsert(ProductRecipeVM obj, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _hostingEnvironment.WebRootPath;
-
-                if (file != null)
+                if (obj.ProductRecipe.Id == 0)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath + @"\images\product", fileName);
-
-                    if (!string.IsNullOrEmpty(obj.Product.imgUrl))
-                    {
-                        string oldFilePath = Path.Combine(wwwRootPath + obj.Product.imgUrl);
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
-
-                    using (var fileStream = new FileStream(productPath, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-
-                    obj.Product.imgUrl = @"\images\product\" + fileName;
-                }
-
-                if (obj.Product.Id == 0)
-                {
-                    _unitOfWork.Product.Add(obj.Product);
+                    _unitOfWork.ProductRecipe.Add(obj.ProductRecipe);
                 }
                 else
                 {
-                    _unitOfWork.Product.Update(obj.Product);
+                    _unitOfWork.ProductRecipe.Update(obj.ProductRecipe);
                 }
 
                 _unitOfWork.Save();
-                TempData["success"] = "Product added successfully.";
+                TempData["success"] = "ProductRecipe added successfully.";
                 return RedirectToAction("Index");
             }
             else
             {
-                obj.CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+                obj.RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
+                obj.ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
                 {
                     Text = i.Name,
                     Value = i.Id.ToString()
@@ -154,19 +139,15 @@ namespace Komora.Areas.User.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unitOfWork.Product.Get(u => u.Id == id);
-            if (productToBeDeleted == null)
+            var productRecipeToBeDeleted = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
+            if (productRecipeToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
             }
 
-            string oldFilePath = Path.Combine(_hostingEnvironment.WebRootPath + productToBeDeleted.imgUrl);
-            if (System.IO.File.Exists(oldFilePath))
-            {
-                System.IO.File.Delete(oldFilePath);
-            }
+            
 
-            _unitOfWork.Product.Remove(productToBeDeleted);
+            _unitOfWork.ProductRecipe.Remove(productRecipeToBeDeleted);
             _unitOfWork.Save();
 
             return Json(new { success = true, message = "Delete Successful" });
@@ -175,8 +156,8 @@ namespace Komora.Areas.User.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit").ToList();
-            return Json(new { data = objProductList });
+            List<ProductRecipe> objProductRecipeList = _unitOfWork.ProductRecipe.GetAll(includeProperties: "Recipe,Product,Unit").ToList();
+            return Json(new { data = objProductRecipeList });
         }
     }
 }

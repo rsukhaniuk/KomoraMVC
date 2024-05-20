@@ -15,6 +15,7 @@ namespace Komora.DataAccess.Repository.IRepository
         IUnitRepository Unit { get; }
         IProductRepository Product { get; }
         IRecipeRepository Recipe { get; }
+        IProductRecipeRepository ProductRecipe { get; }
         void Save();
     }
 }
