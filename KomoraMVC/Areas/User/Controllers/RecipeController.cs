@@ -48,14 +48,32 @@ namespace Komora.Areas.User.Controllers
         /// </returns>
         public IActionResult Upsert(int? id)
         {
+            RecipeVM recipeVM = new RecipeVM
+            {
+                ProductList = _unitOfWork.Product.GetAll().Select(p => new SelectListItem
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }),
+                UnitList = _unitOfWork.Unit.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
+                Recipe = new Recipe(),
+                ProductRecipes = new List<ProductRecipe>()
+            };
+
+
             if (id == null || id == 0)
             {
-                return View(new Recipe());
+                return View(recipeVM);
             }
             else
             {
-                Recipe recipeObj = _unitOfWork.Recipe.Get(u => u.Id == id);
-                return View(recipeObj);
+                recipeVM.Recipe = _unitOfWork.Recipe.Get(u => u.Id == id);
+                recipeVM.ProductRecipes = _unitOfWork.ProductRecipe.GetAll(pr => pr.RecipeId == id).ToList();
+                return View(recipeVM);
             }
         }
 
@@ -70,7 +88,7 @@ namespace Komora.Areas.User.Controllers
         /// </param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Upsert(Recipe obj, IFormFile? file)
+        public IActionResult Upsert(RecipeVM recipeVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -81,9 +99,9 @@ namespace Komora.Areas.User.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string recipePath = Path.Combine(wwwRootPath + @"\images\recipe", fileName);
 
-                    if (!string.IsNullOrEmpty(obj.imgUrl))
+                    if (!string.IsNullOrEmpty(recipeVM.Recipe.imgUrl))
                     {
-                        string oldFilePath = Path.Combine(wwwRootPath + obj.imgUrl);
+                        string oldFilePath = Path.Combine(wwwRootPath + recipeVM.Recipe.imgUrl);
                         if (System.IO.File.Exists(oldFilePath))
                         {
                             System.IO.File.Delete(oldFilePath);
@@ -95,16 +113,16 @@ namespace Komora.Areas.User.Controllers
                         file.CopyTo(fileStream);
                     }
 
-                    obj.imgUrl = @"\images\recipe\" + fileName;
+                    recipeVM.Recipe.imgUrl = @"\images\recipe\" + fileName;
                 }
 
-                if (obj.Id == 0)
+                if (recipeVM.Recipe.Id == 0)
                 {
-                    _unitOfWork.Recipe.Add(obj);
+                    _unitOfWork.Recipe.Add(recipeVM.Recipe);
                 }
                 else
                 {
-                    _unitOfWork.Recipe.Update(obj);
+                    _unitOfWork.Recipe.Update(recipeVM.Recipe);
                 }
 
                 _unitOfWork.Save();
@@ -113,7 +131,7 @@ namespace Komora.Areas.User.Controllers
             }
             else
             {
-                return View(obj);
+                return View(recipeVM);
 
             }
         }

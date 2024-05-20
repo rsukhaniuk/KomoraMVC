@@ -159,6 +159,15 @@ namespace Komora.Areas.User.Controllers
             List<ProductRecipe> objProductRecipeList = _unitOfWork.ProductRecipe.GetAll(includeProperties: "Recipe,Product,Unit").ToList();
             return Json(new { data = objProductRecipeList });
         }
+
+        [HttpGet]
+        public IActionResult GetAllById(int recipeId)
+        {
+            List<ProductRecipe> objProductRecipeList = _unitOfWork.ProductRecipe.GetAll(
+                pr => pr.RecipeId == recipeId,
+                includeProperties: "Recipe,Product,Unit").ToList();
+            return Json(new { data = objProductRecipeList });
+        }
     }
 }
 

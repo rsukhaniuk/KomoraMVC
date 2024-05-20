@@ -178,6 +178,13 @@ namespace Komora.Areas.User.Controllers
             List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit").ToList();
             return Json(new { data = objProductList });
         }
+
+        [HttpGet]
+        public IActionResult GetAllById()
+        {
+            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit").ToList();
+            return Json(new { data = objProductList });
+        }
     }
 }
 

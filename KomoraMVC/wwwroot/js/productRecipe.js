@@ -1,12 +1,23 @@
 ﻿var dataTable;
 
 $(document).ready(function () {
-    loadDataTable();
+    var recipeId = $('#tblData').data('recipe-id');
+    loadDataTable(recipeId);
 });
 
-function loadDataTable() {
+function loadDataTable(recipeId) {
+    var urlPath;
+    if (recipeId === undefined) {
+        urlPath = '/user/productRecipe/getAll';
+        console.log(recipeId)
+    }
+    else {
+        console.log(recipeId)
+        urlPath = `/user/productRecipe/getAllById?recipeId=${recipeId}`;
+    }
+
     dataTable = $('#tblData').DataTable({
-        "ajax": { url: '/user/productRecipe/getall' },
+        "ajax": { url: urlPath },
         "columns": [
             { data: 'id', "width": "5%" },
             { data: 'recipe.name', "width": "20%" },

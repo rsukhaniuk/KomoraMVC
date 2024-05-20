@@ -1,37 +1,52 @@
-﻿@model Recipe
+﻿@model RecipeVM
 
 <form method="post" enctype="multipart/form-data">
     <div class="border p-3 mt-4">
 
         <div class="row pb-2">
-            <h4>@(Model.Id != 0 ? "Update" : "Create") Recipe</h4>
+            <h4>@(Model.Recipe.Id != 0 ? "Update" : "Create") Recipe</h4>
             <hr />
         </div>
-        <input asp-for="Id" hidden />
+        <input asp-for="Recipe.Id" hidden />
         <div asp-validation-summary="All"></div>
         <div class="row">
             <div class="col-12">
                 <div class="form-group mb-3">
-                    <label asp-for="Name" class="control-label pb-1"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Recipe.Name" class="control-label pb-1"></label>
+                    <input asp-for="@Model.Recipe.Name" class="form-control" />
+                    <span asp-validation-for="Recipe.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
-                    <label asp-for="CookingTime" class="control-label pb-1"></label>
-                    <input asp-for="CookingTime" class="form-control" />
-                    <span asp-validation-for="CookingTime" class="text-danger"></span>
+                    <label asp-for="Recipe.CookingTime" class="control-label pb-1"></label>
+                    <input asp-for="@Model.Recipe.CookingTime" class="form-control" />
+                    <span asp-validation-for="Recipe.CookingTime" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
-                    <label asp-for="Preparation" class="control-label pb-1"></label>
-                    <textarea asp-for="Preparation" class="form-control"></textarea>
-                    <span asp-validation-for="Preparation" class="text-danger"></span>
+                    <label asp-for="Recipe.Preparation" class="control-label pb-1"></label>
+                    <textarea asp-for="@Model.Recipe.Preparation" class="form-control"></textarea>
+                    <span asp-validation-for="Recipe.Preparation" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
-                    <label asp-for="imgUrl" class="control-label pb-1"></label>
-                    <input type="file" name="file" asp-for="imgUrl" class="form-control" />
+                    <label asp-for="Recipe.imgUrl" class="control-label pb-1"></label>
+                    <input type="file" name="file" asp-for="Recipe.imgUrl" class="form-control" />
                 </div>
+                <div class="form-group mb-3">
+                    <table id="tblData" data-recipe-id="@Model.Recipe.Id" class="table table-bordered table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Recipe</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
                 <div class="row">
-                    @if (Model.Id != 0)
+                    @if (Model.Recipe.Id != 0)
                     {
                         <div class="col-6 col-md-3">
                             <button type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
@@ -62,4 +77,5 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
+    <script src="~/js/productRecipe.js"></script>
 }
