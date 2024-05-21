@@ -114,67 +114,58 @@ namespace Komora.Areas.User.Controllers
         [HttpPost]
         public IActionResult Upsert(RecipeVM recipeVM, IFormFile? file)
         {
-            if (!ModelState.IsValid)
+            string wwwRootPath = _hostingEnvironment.WebRootPath;
+
+            if (file != null)
             {
-                string wwwRootPath = _hostingEnvironment.WebRootPath;
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string recipePath = Path.Combine(wwwRootPath + @"\images\recipe", fileName);
 
-                if (file != null)
+                if (!string.IsNullOrEmpty(recipeVM.Recipe.imgUrl))
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string recipePath = Path.Combine(wwwRootPath + @"\images\recipe", fileName);
-
-                    if (!string.IsNullOrEmpty(recipeVM.Recipe.imgUrl))
+                    string oldFilePath = Path.Combine(wwwRootPath + recipeVM.Recipe.imgUrl);
+                    if (System.IO.File.Exists(oldFilePath))
                     {
-                        string oldFilePath = Path.Combine(wwwRootPath + recipeVM.Recipe.imgUrl);
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
-
-                    using (var fileStream = new FileStream(recipePath, FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-
-                    recipeVM.Recipe.imgUrl = @"\images\recipe\" + fileName;
-                }
-
-                if (recipeVM.Recipe.Id == 0)
-                {
-                    _unitOfWork.Recipe.Add(recipeVM.Recipe);
-                    _unitOfWork.Save();
-                }
-                else
-                {
-                    _unitOfWork.Recipe.Update(recipeVM.Recipe);
-                    _unitOfWork.Save();
-                }
-
-                foreach (var productRecipe in recipeVM.ProductRecipes)
-                {
-                    productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
-                    if (productRecipe.Id == 0)
-                    {
-                        _unitOfWork.ProductRecipe.Add(productRecipe);
-                    }
-                    else
-                    {
-                        _unitOfWork.ProductRecipe.Update(productRecipe);
+                        System.IO.File.Delete(oldFilePath);
                     }
                 }
 
+                using (var fileStream = new FileStream(recipePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                recipeVM.Recipe.imgUrl = @"\images\recipe\" + fileName;
+            }
+
+            if (recipeVM.Recipe.Id == 0)
+            {
+                _unitOfWork.Recipe.Add(recipeVM.Recipe);
                 _unitOfWork.Save();
-                TempData["success"] = "Recipe added successfully.";
-
-                return RedirectToAction("Index");
             }
             else
             {
-                HttpContext.Session.SetString("RecipeData", JsonConvert.SerializeObject(recipeVM));
-                return View(recipeVM);
-
+                _unitOfWork.Recipe.Update(recipeVM.Recipe);
+                _unitOfWork.Save();
             }
+
+            foreach (var productRecipe in recipeVM.ProductRecipes)
+            {
+                productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
+                if (productRecipe.Id == 0)
+                {
+                    _unitOfWork.ProductRecipe.Add(productRecipe);
+                }
+                else
+                {
+                    _unitOfWork.ProductRecipe.Update(productRecipe);
+                }
+            }
+
+            _unitOfWork.Save();
+            TempData["success"] = "Recipe added successfully.";
+
+            return RedirectToAction("Index");
         }
 
 
