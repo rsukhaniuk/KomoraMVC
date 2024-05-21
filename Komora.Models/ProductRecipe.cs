@@ -30,7 +30,7 @@ namespace Komora.Models
         public Product Product { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
 
         [DisplayName("Unit")]
         public int UnitId { get; set; }

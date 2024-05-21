@@ -28,7 +28,7 @@ namespace Komora.Models
         public Category Category { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
 
         [DisplayName("Unit")]
 
@@ -39,7 +39,7 @@ namespace Komora.Models
         public Unit Unit { get; set; }
 
         [Required]
-        public int Price { get; set; }
+        public double Price { get; set; }
 
         [ValidateNever]
         [DisplayName("Image")]

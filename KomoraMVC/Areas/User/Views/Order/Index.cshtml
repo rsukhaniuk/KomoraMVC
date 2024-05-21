@@ -1,0 +1,27 @@
+﻿@model List<OrderVM>
+
+<h2>Calculated Orders</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Category Name</th>
+            <th>Order Quantity</th>
+            <th>Order Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductId</td>
+                <td>@item.ProductName</td>
+                <td>@item.CategoryName</td>
+                <td>@item.OrderQuan</td>
+                <td>$@item.OrderPrice</td>
+            </tr>
+        }
+    </tbody>
+</table>
