@@ -4,12 +4,13 @@
 
 <table class="table">
     <thead>
+
         <tr>
             <th>Product ID</th>
             <th>Product Name</th>
             <th>Category Name</th>
             <th>Order Quantity</th>
-            <th>Order Price</th>
+            <th>Order Price (₴)</th>
         </tr>
     </thead>
     <tbody>
@@ -20,8 +21,25 @@
                 <td>@item.ProductName</td>
                 <td>@item.CategoryName</td>
                 <td>@item.OrderQuan</td>
-                <td>$@item.OrderPrice</td>
+                <td>₴@item.OrderPrice.ToString("N2")</td> <!-- Formatting for currency -->
             </tr>
         }
+        
     </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4">Total</th>
+            <th>₴@Model.Sum(item => item.OrderPrice).ToString("N2")</th>
+        </tr>
+        <tr>
+            <th colspan="5">
+                <form action="@Url.Action("Insert", "Order")" method="post">
+                    <button type="submit" class="btn btn-primary">Add to DB</button>
+                </form>
+            </th>
+
+            
+        </tr>
+    </tfoot>
+
 </table>

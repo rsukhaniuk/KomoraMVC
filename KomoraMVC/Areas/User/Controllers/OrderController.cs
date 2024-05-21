@@ -16,6 +16,7 @@ namespace Komora.Areas.User.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _db;
+        private List<OrderVM> calculatedOrder;
 
         /// <summary>
         /// Constructor that initializes the unitOfWork
@@ -39,6 +40,7 @@ namespace Komora.Areas.User.Controllers
                     p.Name,
                     CategoryName = p.Category.Name,
                     p.Price,
+                    p.Quantity,
                     PlanQuantitiesInfo = _db.ProductRecipe
                         .Where(pr => pr.ProductId == p.Id)
                         .SelectMany(pr => _db.Menu
@@ -58,12 +60,19 @@ namespace Komora.Areas.User.Controllers
                     ProductId = p.Id,
                     ProductName = p.Name,
                     CategoryName = p.CategoryName,
-                    OrderQuan = Math.Ceiling(  (Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * 1.2) 
-                        - Math.Max(0, p.Remains)))/ p.PlanQuantitiesInfo.Sum(x => x.Quantity))* p.PlanQuantitiesInfo.Sum(x => x.Quantity),
-                    OrderPrice = 2 * p.Price
+                    OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * 1.2)
+                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
+                    OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * 1.2)
+                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
                 })
                 .Where(p => p.OrderQuan > 0)
-                .ToList();
+                .ToList();  
+
+            //orders.ForEach(o =>
+            //{
+            //    var product = productData.First(p => p.Id == o.ProductId);
+            //    o.OrderPrice = o.OrderQuan * product.Price;
+            //});
 
             return orders;
 
@@ -72,6 +81,24 @@ namespace Komora.Areas.User.Controllers
         public IActionResult Index()
         {
             return View(CalculateOrders());
+        }
+
+        [HttpPost]
+        public IActionResult Insert()
+        {
+            var orders = CalculateOrders();
+            foreach (var item in orders)
+            {
+                InventoryItem inventoryItem = new InventoryItem();
+                inventoryItem.ProductId = item.ProductId;
+                inventoryItem.RemainQuantity = item.OrderQuan;
+                inventoryItem.IncomeDate = DateTime.Now;
+                _unitOfWork.Inventory.Add(inventoryItem);
+            }
+
+            _unitOfWork.Save();
+            TempData["success"] = "Products added successfully.";
+            return RedirectToAction("Index");
         }
 
     }
