@@ -39,94 +39,48 @@
                     </div>
                     <button class="btn btn-success float-right" type="button" id="add-ingredient">Add Ingredient</button>
 
+                    <div id="ingredients">
+
                     @for (int i = 0; i < Model.ProductRecipes.Count; i++)
                     {
-                        @* <div class="ingredient-group">
-                            <div class="form-group mb-3">
-                                <label asp-for="ProductRecipes[i].ProductId" class="control-label pb-1"></label>
-                                <select asp-for="@Model.ProductRecipes[i].ProductId" asp-items="@Model.ProductList" class="form-select">
-                                    <option disabled selected>Select Product</option>
-                                </select>
-                                <span asp-validation-for="ProductRecipes[i].ProductId" class="text-danger"></span>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label asp-for="ProductRecipes[i].Quantity" class="control-label pb-1"></label>
-                                <input asp-for="ProductRecipes[i].Quantity" class="form-control" />
-                                <span asp-validation-for="ProductRecipes[i].Quantity" class="text-danger"></span>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label asp-for="ProductRecipes[i].UnitId" class="control-label pb-1"></label>
-                                <select asp-for="@Model.ProductRecipes[i].UnitId" asp-items="@Model.UnitList" class="form-select">
-                                    <option disabled selected>Select Unit</option>
-                                </select>
-                                <span asp-validation-for="ProductRecipes[i].UnitId" class="text-danger"></span>
-                            </div>
-                            <button type="button" onclick="$(this).parent().remove()">Remove</button>
-                        </div> *@
+                            <input type="hidden" asp-for="ProductRecipes[i].Id" />
+                            <div class="ingredient-group row">
+                                <!-- Product Selection -->
+                                <div class="col-md-3 form-group mb-3">
+                                    <label asp-for="ProductRecipes[i].ProductId" class="control-label"></label>
+                                    <select asp-for="@Model.ProductRecipes[i].ProductId" asp-items="@Model.ProductList" class="form-select">
+                                        <option disabled selected>Select Product</option>
+                                    </select>
+                                    <span asp-validation-for="ProductRecipes[i].ProductId" class="text-danger"></span>
+                                </div>
 
-                        <div class="ingredient-group row">
-                            <!-- Product Selection -->
-                            <div class="col-md-3 form-group mb-3">
-                                <label asp-for="ProductRecipes[i].ProductId" class="control-label"></label>
-                                <select asp-for="@Model.ProductRecipes[i].ProductId" asp-items="@Model.ProductList" class="form-select">
-                                    <option disabled selected>Select Product</option>
-                                </select>
-                                <span asp-validation-for="ProductRecipes[i].ProductId" class="text-danger"></span>
-                            </div>
+                                <!-- Quantity Input -->
+                                <div class="col-md-3 form-group mb-3">
+                                    <label asp-for="ProductRecipes[i].Quantity" class="control-label"></label>
+                                    <input asp-for="ProductRecipes[i].Quantity" class="form-control" />
+                                    <span asp-validation-for="ProductRecipes[i].Quantity" class="text-danger"></span>
+                                </div>
 
-                            <!-- Quantity Input -->
-                            <div class="col-md-3 form-group mb-3">
-                                <label asp-for="ProductRecipes[i].Quantity" class="control-label"></label>
-                                <input asp-for="ProductRecipes[i].Quantity" class="form-control" />
-                                <span asp-validation-for="ProductRecipes[i].Quantity" class="text-danger"></span>
-                            </div>
+                                <!-- Unit Selection -->
+                                <div class="col-md-3 form-group mb-3">
+                                    <label asp-for="ProductRecipes[i].UnitId" class="control-label"></label>
+                                    <select asp-for="@Model.ProductRecipes[i].UnitId" asp-items="@Model.UnitList" class="form-select">
+                                        <option disabled selected>Select Unit</option>
+                                    </select>
+                                    <span asp-validation-for="ProductRecipes[i].UnitId" class="text-danger"></span>
+                                </div>
 
-                            <!-- Unit Selection -->
-                            <div class="col-md-3 form-group mb-3">
-                                <label asp-for="ProductRecipes[i].UnitId" class="control-label"></label>
-                                <select asp-for="@Model.ProductRecipes[i].UnitId" asp-items="@Model.UnitList" class="form-select">
-                                    <option disabled selected>Select Unit</option>
-                                </select>
-                                <span asp-validation-for="ProductRecipes[i].UnitId" class="text-danger"></span>
+                                <!-- Remove Button -->
+                                <div class="col-md-3 form-group mb-3 align-self-end">
+                                    <button type="button" class="btn btn-danger" onclick="$(this).closest('.ingredient-group').remove()">Remove</button>
+                                </div>
                             </div>
-
-                            <!-- Remove Button -->
-                            <div class="col-md-3 form-group mb-3 align-self-end">
-                                <button type="button" class="btn btn-danger" onclick="$(this).closest('.ingredient-group').remove()">Remove</button>
-                            </div>
-                        </div>
 
                     }
+                    </div>
 
                 </div>
                 
-                @* <div class="form-group mb-3">
-
-                    <div class="card-body p-4">
-                        <div class="row pt-4 pb-3">
-                            <div class="col-6">
-                                <h2 class="text-black">ProductRecipe List</h2>
-                            </div>
-                            <div class="col-6 text-end">
-                                <a asp-controller="Recipe" asp-action="UpsertIngridient" class="btn btn-success float-right">Create</a>
-                            </div>
-                        </div>
-                        <table id="tblData" data-recipe-id="@Model.Recipe.Id" class="table table-bordered table-striped" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Recipe</th>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Unit</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-
-                </div> *@
-
                 <div class="row">
                     @if (Model.Recipe.Id != 0)
                     {
@@ -163,10 +117,13 @@
     <script>
         $(document).ready(function () {
             $('#add-ingredient').on('click', function () {
-                var index = $('.ingredient-group row').length;  // Determine the new index based on existing elements
+                var index = $('.ingredient-group.row').length;  // Determine the new index based on existing elements
+                console.log(index);
                 var newIngredientHtml = `
                         <div class="ingredient-group row">
+                            <input type="hidden" name="ProductRecipes[${index}].Id" value="0">  <!-- Новий інгредієнт має Id 0 -->
                             <div class="col-md-3 form-group mb-3">
+                                
                                 <label>Product</label>
                                 <select name="ProductRecipes[${index}].ProductId" class="form-select">
                                     <option value="">Select Product</option>
@@ -174,6 +131,7 @@
                                     {
                                         <option value="@product.Value">@product.Text</option>
                                     }
+
                                 </select>
                             </div>
 
@@ -195,11 +153,12 @@
                                 <button type="button" class="remove-ingredient btn btn-danger">Remove</button>
                             </div>
                         </div>`
-                $('#ingredients-container').append(newIngredientHtml);  // Append the new ingredient group
+                $('#ingredients').append(newIngredientHtml);  // Append the new ingredient group
             });
 
             $(document).on('click', '.remove-ingredient', function () {
                 $(this).closest('.ingredient-group').remove();  // Remove the ingredient group
+
             });
         });
     </script>

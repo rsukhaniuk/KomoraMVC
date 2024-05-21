@@ -114,7 +114,7 @@ namespace Komora.Areas.User.Controllers
         [HttpPost]
         public IActionResult Upsert(RecipeVM recipeVM, IFormFile? file)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 string wwwRootPath = _hostingEnvironment.WebRootPath;
 
@@ -151,7 +151,7 @@ namespace Komora.Areas.User.Controllers
                     _unitOfWork.Save();
                 }
 
-                foreach (var productRecipe in productRecipes)
+                foreach (var productRecipe in recipeVM.ProductRecipes)
                 {
                     productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
                     if (productRecipe.Id == 0)
