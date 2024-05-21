@@ -32,7 +32,12 @@
                     <label asp-for="Recipe.imgUrl" class="control-label pb-1"></label>
                     <input type="file" name="file" asp-for="Recipe.imgUrl" class="form-control" />
                 </div>
-                <div id="ingredients-container">
+                <div class="border p-3 mt-4" id="ingredients-container">
+                    <div class="row pb-2">
+                        <h4>Ingridients</h4>
+                        <hr />
+                    </div>
+                    <button class="btn btn-success float-right" type="button" id="add-ingredient">Add Ingredient</button>
 
                     @for (int i = 0; i < Model.ProductRecipes.Count; i++)
                     {
@@ -86,13 +91,15 @@
                             </div>
 
                             <!-- Remove Button -->
-                            <div class="col-md-3 form-group mb-3">
+                            <div class="col-md-3 form-group mb-3 align-self-end">
                                 <button type="button" class="btn btn-danger" onclick="$(this).closest('.ingredient-group').remove()">Remove</button>
                             </div>
                         </div>
+
                     }
+
                 </div>
-                <button type="button" id="add-ingredient">Add Ingredient</button>
+                
                 @* <div class="form-group mb-3">
 
                     <div class="card-body p-4">
