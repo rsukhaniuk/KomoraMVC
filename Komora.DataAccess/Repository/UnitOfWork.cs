@@ -28,6 +28,7 @@ namespace Komora.DataAccess.Repository
             Product = new ProductRepository(_db);
             Recipe = new RecipeRepository(_db);
             ProductRecipe = new ProductRecipeRepository(_db);
+            Meal = new MealRepository(_db);
         }
         
         /// <summary>
@@ -54,6 +55,11 @@ namespace Komora.DataAccess.Repository
         /// Property that returns the IRecipeRepository
         /// </summary>
         public IProductRecipeRepository ProductRecipe { get; private set; }
+
+        /// <summary>
+        /// Property that returns the IMealRepository
+        /// </summary>
+        public IMealRepository Meal { get; private set; }
 
         /// <summary>
         /// Method that disposes the database context

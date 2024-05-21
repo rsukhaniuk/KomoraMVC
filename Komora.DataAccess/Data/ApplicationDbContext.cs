@@ -44,6 +44,11 @@ namespace Komora.DataAccess.Data
         /// </summary>
         public DbSet<ProductRecipe> ProductRecipe { get; set; }
 
+        /// <summary>
+        /// Property that represents the Meals table
+        /// </summary>
+        public DbSet<Meal> Meals { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
