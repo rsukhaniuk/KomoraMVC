@@ -1,0 +1,37 @@
+﻿@model List<InventoryItem>
+
+
+<div class="container">
+    <div class="card-body p-4">
+        <div class="row pt-4 pb-3">
+            <div class="col-6">
+                <h2 class="text-black">Inventory</h2>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="Inventory" asp-action="Upsert" class="btn btn-success float-right">Create</a>
+            </div>
+        </div>
+        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Expiration Date</th>
+                    <th>Plan Date</th>
+                    <th>Plan Quantity</th>
+                    <th>Income Date</th>
+                    <th>Income Quantity</th>
+                    <th>Remain Date</th>
+                    <th>Remain Quantity</th>
+                    <th>Waste Date</th>
+                    <th>Waste Quantity</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/inventory.js"></script>
+}

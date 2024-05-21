@@ -1,0 +1,109 @@
+﻿@model InventoryVM
+
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+
+        <div class="row pb-2">
+            <h4>@(Model.InventoryItem.Id != 0 ? "Update" : "Create") Inventory item</h4>
+            <hr />
+        </div>
+        <input asp-for="InventoryItem.Id" hidden />
+        <div asp-validation-summary="All"></div>
+        <div class="row">
+            <div class="col-10">
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.ProductId" class="control-label pb-1"></label>
+                    <select asp-for="@Model.InventoryItem.ProductId" asp-items="@Model.ProductList" class="form-select">
+                        <option disabled selected>Select Product</option>
+                    </select>
+                    <span asp-validation-for="InventoryItem.ProductId" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.ExpirationDate" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.ExpirationDate" class="form-control" />
+                    <span asp-validation-for="InventoryItem.ExpirationDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.PlanDate" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.PlanDate" class="form-control" />
+                    <span asp-validation-for="InventoryItem.PlanDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.PlanQuantity" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.PlanQuantity" class="form-control" />
+                    <span asp-validation-for="InventoryItem.PlanQuantity" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.IncomeDate" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.IncomeDate" class="form-control" />
+                    <span asp-validation-for="InventoryItem.IncomeDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.IncomeQuantity" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.IncomeQuantity" class="form-control" />
+                    <span asp-validation-for="InventoryItem.IncomeQuantity" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.Remaindate" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.Remaindate" class="form-control" />
+                    <span asp-validation-for="InventoryItem.Remaindate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.RemainQuantity" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.RemainQuantity" class="form-control" />
+                    <span asp-validation-for="InventoryItem.RemainQuantity" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.WasteDate" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.WasteDate" class="form-control" />
+                    <span asp-validation-for="InventoryItem.WasteDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="InventoryItem.WasteQuantity" class="control-label pb-1"></label>
+                    <input asp-for="InventoryItem.WasteQuantity" class="form-control" />
+                    <span asp-validation-for="InventoryItem.WasteQuantity" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    @if (Model.InventoryItem.Id != 0)
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
+                        </div>
+                    }
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Inventory" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                            Inventory
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+
+
+
+
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
