@@ -1,0 +1,79 @@
+﻿@model MenuVM
+
+<form method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+
+        <div class="row pb-2">
+            <h4>@(Model.Menu.Id != 0 ? "Update" : "Create") Menu</h4>
+            <hr />
+        </div>
+        <input asp-for="Menu.Id" hidden />
+        <div asp-validation-summary="All"></div>
+        <div class="row">
+            <div class="col-10">
+                <div class="form-group mb-3">
+                    <label asp-for="Menu.Date" class="control-label pb-1"></label>
+                    <input asp-for="Menu.Date" class="form-control" />
+                    <span asp-validation-for="Menu.Date" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Menu.MealId" class="control-label pb-1"></label>
+                    <select asp-for="@Model.Menu.MealId" asp-items="@Model.MealList" class="form-select">
+                        <option disabled selected>Select Meal</option>
+                    </select>
+                    <span asp-validation-for="Menu.MealId" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Menu.RecipeId" class="control-label pb-1"></label>
+                    <select asp-for="@Model.Menu.RecipeId" asp-items="@Model.RecipeList" class="form-select">
+                        <option disabled selected>Select Recipe</option>
+                    </select>
+                    <span asp-validation-for="Menu.RecipeId" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Menu.Servings" class="control-label pb-1"></label>
+                    <input asp-for="Menu.Servings" class="form-control" />
+                    <span asp-validation-for="Menu.Servings" class="text-danger"></span>
+                </div>
+                <div class="form-check mb-3">
+                    <input asp-for="StatusForDisplay" class="form-check-input" type="checkbox" id="menuStatusDisplay" />
+                    <label class="form-check-label" for="menuStatusDisplay">Active</label>
+                    <span asp-validation-for="StatusForDisplay" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    @if (Model.Menu.Id != 0)
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
+                        </div>
+                    }
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="Menu" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                            Menu List
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @* <div class="col-2">
+                <img src="@Model.Product.imgUrl" width="100%" />
+            </div> *@
+
+        </div>
+
+
+
+
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
