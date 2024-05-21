@@ -14,7 +14,7 @@ namespace Komora.Models.ViewModels
 
         //public IEnumerable<SelectListItem> ProductRecipeList { get; set; }
         public List<ProductRecipe> ProductRecipes { get; set; }
-        //public IEnumerable<SelectListItem> ProductList { get; set; }
-        //public IEnumerable<SelectListItem> UnitList { get; set; }
+        public IEnumerable<SelectListItem> ProductList { get; set; }
+        public IEnumerable<SelectListItem> UnitList { get; set; }
     }
 }

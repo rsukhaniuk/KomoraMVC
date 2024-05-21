@@ -62,16 +62,16 @@ namespace Komora.Areas.User.Controllers
             {
                 recipeVM = new RecipeVM
                 {
-                    // ProductList = _unitOfWork.Product.GetAll().Select(p => new SelectListItem
-                    //{
-                    //    Text = p.Name,
-                    //    Value = p.Id.ToString()
-                    //}),
-                    //UnitList = _unitOfWork.Unit.GetAll().Select(u => new SelectListItem
-                    //{
-                    //    Text = u.Name,
-                    //    Value = u.Id.ToString()
-                    //}),
+                    ProductList = _unitOfWork.Product.GetAll().Select(p => new SelectListItem
+                    {
+                        Text = p.Name,
+                        Value = p.Id.ToString()
+                    }),
+                    UnitList = _unitOfWork.Unit.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.Name,
+                        Value = u.Id.ToString()
+                    }),
                     Recipe = new Recipe(),
                     ProductRecipes = new List<ProductRecipe>()
                 };

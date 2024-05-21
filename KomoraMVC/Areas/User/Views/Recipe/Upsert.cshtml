@@ -32,7 +32,35 @@
                     <label asp-for="Recipe.imgUrl" class="control-label pb-1"></label>
                     <input type="file" name="file" asp-for="Recipe.imgUrl" class="form-control" />
                 </div>
-                <div class="form-group mb-3">
+                <div id="ingredients-container">
+                    @for (int i = 0; i < Model.ProductRecipes.Count; i++)
+                    {
+                        <div class="ingredient-group">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductRecipes[i].ProductId" class="control-label pb-1"></label>
+                                <select asp-for="@Model.ProductRecipes[i].ProductId" asp-items="@Model.ProductList" class="form-select">
+                                    <option disabled selected>Select Product</option>
+                                </select>
+                                <span asp-validation-for="ProductRecipes[i].ProductId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductRecipes[i].Quantity" class="control-label pb-1"></label>
+                                <input asp-for="ProductRecipes[i].Quantity" class="form-control" />
+                                <span asp-validation-for="ProductRecipes[i].Quantity" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductRecipes[i].UnitId" class="control-label pb-1"></label>
+                                <select asp-for="@Model.ProductRecipes[i].UnitId" asp-items="@Model.UnitList" class="form-select">
+                                    <option disabled selected>Select Unit</option>
+                                </select>
+                                <span asp-validation-for="ProductRecipes[i].UnitId" class="text-danger"></span>
+                            </div>
+                            <button type="button" onclick="$(this).parent().remove()">Remove</button>
+                        </div>
+                    }
+                </div>
+                <button type="button" id="add-ingredient">Add Ingredient</button>
+                @* <div class="form-group mb-3">
 
                     <div class="card-body p-4">
                         <div class="row pt-4 pb-3">
@@ -57,7 +85,7 @@
                         </table>
                     </div>
 
-                </div>
+                </div> *@
 
                 <div class="row">
                     @if (Model.Recipe.Id != 0)
@@ -91,5 +119,45 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
-    <script src="~/js/productRecipe.js"></script>
+    @* <script src="~/js/productRecipe.js"></script> *@
+    <script>
+        $(document).ready(function () {
+            $('#add-ingredient').on('click', function () {
+                var index = $('.ingredient-group').length;  // Determine the new index based on existing elements
+                var newIngredientHtml = `
+                    <div class="ingredient-group">
+                        <div class="form-group mb-3">
+                            <label>Product</label>
+                            <select name="ProductRecipes[${index}].ProductId" class="form-select">
+                                <option value="">Select Product</option>
+        @foreach (var product in Model.ProductList)
+        {
+                                        <option value="@product.Value">@product.Text</option>
+        }
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Quantity</label>
+                            <input type="number" name="ProductRecipes[${index}].Quantity" class="form-control" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Unit</label>
+                            <select name="ProductRecipes[${index}].UnitId" class="form-select">
+                                <option value="">Select Unit</option>
+        @foreach (var unit in Model.UnitList)
+        {
+                                        <option value="@unit.Value">@unit.Text</option>
+        }
+                            </select>
+                        </div>
+                        <button type="button" class="remove-ingredient btn btn-danger">Remove</button>
+                    </div>`;
+                $('#ingredients-container').append(newIngredientHtml);  // Append the new ingredient group
+            });
+
+            $(document).on('click', '.remove-ingredient', function () {
+                $(this).closest('.ingredient-group').remove();  // Remove the ingredient group
+            });
+        });
+    </script>
 }
