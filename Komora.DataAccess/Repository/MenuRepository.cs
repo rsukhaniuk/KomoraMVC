@@ -31,11 +31,12 @@ namespace Komora.DataAccess.Repository
             var objFromDb = _db.Menu.FirstOrDefault(s => s.Id == obj.Id);
             if (objFromDb != null)
             {
-                objFromDb.Servings = obj.Servings;
-                objFromDb.MealId = obj.MealId;
-                objFromDb.RecipeId = obj.RecipeId;
+                //objFromDb.Servings = obj.Servings;
+                //objFromDb.MealId = obj.MealId;
+                //objFromDb.RecipeId = obj.RecipeId;
                 objFromDb.Date = obj.Date;
                 objFromDb.Status = obj.Status;
+                objFromDb.UserId = obj.UserId;
             }
         }
     }

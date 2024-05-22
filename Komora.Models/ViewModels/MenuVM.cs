@@ -18,6 +18,7 @@ namespace Komora.Models.ViewModels
         [ValidateNever]
         public IEnumerable<SelectListItem> RecipeList { get; set; }
 
+
         // Other properties
         public bool StatusForDisplay
         {

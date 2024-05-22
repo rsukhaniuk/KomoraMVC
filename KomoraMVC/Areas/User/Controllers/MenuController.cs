@@ -34,6 +34,7 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
+
             var MenuList = _unitOfWork.Menu.GetAll(includeProperties: "Meal,Recipe");
             return View(MenuList);
         }

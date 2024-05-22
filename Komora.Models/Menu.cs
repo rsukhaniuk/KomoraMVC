@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
@@ -15,27 +16,36 @@ namespace Komora.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [DisplayName("Number of servings")]
-        public int Servings { get; set; }
+        //[Required]
+        //[DisplayName("Number of servings")]
+        //public int Servings { get; set; }
 
-        [DisplayName("Meal")]
-        public int MealId { get; set; }
+        //[DisplayName("Meal")]
+        //public int MealId { get; set; }
 
-        [ForeignKey("MealId")]
-        [ValidateNever]
-        public Meal Meal { get; set; }
+        //[ForeignKey("MealId")]
+        //[ValidateNever]
+        //public Meal Meal { get; set; }
 
-        [DisplayName("Recipe")]
-        public int RecipeId { get; set; }
+        //[DisplayName("Recipe")]
+        //public int RecipeId { get; set; }
 
-        [ForeignKey("RecipeId")]
-        [ValidateNever]
-        public Recipe Recipe { get; set; }
+        //[ForeignKey("RecipeId")]
+        //[ValidateNever]
+        //public Recipe Recipe { get; set; }
 
         public Nullable<System.DateTime> Date { get; set; }
 
         public Nullable<bool> Status { get; set; }
+
+        // Foreign Key Property
+        [ValidateNever]
+        public string UserId { get; set; }
+
+        // Navigation Property
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public IdentityUser User { get; set; }
 
     }   
        
