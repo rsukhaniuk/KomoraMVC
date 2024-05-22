@@ -53,7 +53,7 @@ namespace Komora.Areas.User.Controllers
 
                 Meal mealObj = new Meal();
                 mealObj.UserId = userId;
-                return View(new Meal());
+                return View(mealObj);
             }
             else
             {

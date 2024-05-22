@@ -2,9 +2,11 @@
 using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
 using Komora.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting.Internal;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Komora.Areas.User.Controllers
@@ -12,6 +14,8 @@ namespace Komora.Areas.User.Controllers
     /// <summary>
     /// Controller that manages the Inventory model
     /// </summary>
+    [Area("User")]
+    [Authorize]
     public class InventoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -33,7 +37,10 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var Inventory = _unitOfWork.Inventory.GetAll(includeProperties: "Product");
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var Inventory = _unitOfWork.Inventory.GetAll(u => u.UserId == userId, includeProperties: "Product");
             return View(Inventory);
         }
 
@@ -63,11 +70,22 @@ namespace Komora.Areas.User.Controllers
 
             if (id == null || id == 0)
             {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                inventoryVM.InventoryItem.UserId = userId;
+
                 return View(inventoryVM);
             }
             else
             {
                 inventoryVM.InventoryItem = _unitOfWork.Inventory.Get(u => u.Id == id);
+
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                inventoryVM.InventoryItem.UserId = userId;
+
                 return View(inventoryVM);
             }
         }
@@ -90,10 +108,20 @@ namespace Komora.Areas.User.Controllers
 
                 if (obj.InventoryItem.Id == 0)
                 {
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    obj.InventoryItem.UserId = userId;
+
                     _unitOfWork.Inventory.Add(obj.InventoryItem);
                 }
                 else
                 {
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    obj.InventoryItem.UserId = userId;
+
                     _unitOfWork.Inventory.Update(obj.InventoryItem);
                 }
 
@@ -139,7 +167,10 @@ namespace Komora.Areas.User.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<InventoryItem> objInventory = _unitOfWork.Inventory.GetAll(includeProperties: "Product").ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<InventoryItem> objInventory = _unitOfWork.Inventory.GetAll(u => u.UserId == userId, includeProperties: "Product").ToList();
             return Json(new { data = objInventory });
         }
 

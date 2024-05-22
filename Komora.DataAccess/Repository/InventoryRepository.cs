@@ -41,7 +41,7 @@ namespace Komora.DataAccess.Repository
                 objFromDb.RemainQuantity = obj.RemainQuantity;
                 objFromDb.WasteDate = obj.WasteDate;
                 objFromDb.WasteQuantity = obj.WasteQuantity;
-
+                objFromDb.UserId = obj.UserId;
             }
         }
     }
