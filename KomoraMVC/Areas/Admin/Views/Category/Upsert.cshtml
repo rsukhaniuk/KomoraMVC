@@ -20,17 +20,17 @@
                     @if (Model.Id != 0)
                     {
                         <div class="col-6 col-md-3">
-                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
+                            <button asp-area="Admin" type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
                         </div>
                     }
                     else
                     {
                         <div class="col-6 col-md-3">
-                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
+                            <button asp-area="Admin" type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
                         </div>
                     }
                     <div class="col-6 col-md-3">
-                        <a asp-controller="Category" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                        <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
                             Category List
                         </a>
                     </div>

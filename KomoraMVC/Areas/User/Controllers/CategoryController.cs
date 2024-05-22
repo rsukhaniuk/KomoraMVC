@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace Komora.Areas.Admin.Controllers
+namespace Komora.Areas.User.Controllers
 {
     /// <summary>
     /// Controller that manages the Category model
     /// </summary>
-    [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Area("User")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -30,6 +29,7 @@ namespace Komora.Areas.Admin.Controllers
         /// Method that returns the view with the list of categories
         /// </summary>
         /// <returns></returns>
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         public IActionResult Index()
         {
             var CategoryList = _unitOfWork.Category.GetAll();
@@ -45,6 +45,8 @@ namespace Komora.Areas.Admin.Controllers
         /// <returns>
         /// View with the form to create or update a category
         /// </returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         public IActionResult Upsert(int? id)
         {
             if (id == null || id == 0)
@@ -68,6 +70,8 @@ namespace Komora.Areas.Admin.Controllers
         /// Image of category
         /// </param>
         /// <returns></returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         [HttpPost]
         public IActionResult Upsert(Category obj, IFormFile? file)
         {
@@ -84,7 +88,7 @@ namespace Komora.Areas.Admin.Controllers
 
                 _unitOfWork.Save();
                 TempData["success"] = "Category created successfully";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { Area = "User" });
             }
             else
             {
@@ -119,6 +123,8 @@ namespace Komora.Areas.Admin.Controllers
         /// </summary>
         /// <param name="id">id of the category to be deleted</param>
         /// <returns></returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
@@ -136,7 +142,7 @@ namespace Komora.Areas.Admin.Controllers
             return Json(new { success = true, message = "Delete Successful" });
             //return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         [HttpGet]
         public IActionResult GetAll()
         {
