@@ -49,17 +49,17 @@
                     @if (Model.Product.Id != 0)
                     {
                         <div class="col-6 col-md-3">
-                            <button asp-area="Admin" type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Edit</button>
                         </div>
                     }
                     else
                     {
                         <div class="col-6 col-md-3">
-                            <button asp-area="Admin" type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
+                            <button type="submit" class="btn btn-primary form-control" style="height:50px">Create</button>
                         </div>
                     }
                     <div class="col-6 col-md-3">
-                        <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-secondary form-control d-flex justify-content-center align-items-center" style="height: 50px">
                             Product List
                         </a>
                     </div>

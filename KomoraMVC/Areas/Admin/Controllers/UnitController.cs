@@ -1,9 +1,13 @@
 ﻿using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
+using Komora.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Komora.Areas.User.Controllers
+namespace Komora.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class UnitController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -14,7 +18,7 @@ namespace Komora.Areas.User.Controllers
         /// <param name="unitOfWork"></param>
         public UnitController(IUnitOfWork unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>

@@ -2,6 +2,8 @@
 using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
 using Komora.Models.ViewModels;
+using Komora.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting.Internal;
@@ -9,9 +11,11 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Komora.Areas.User.Controllers
 {
+
     /// <summary>
     /// Controller that manages the Product model
     /// </summary>
+    [Area("User")]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -23,7 +27,7 @@ namespace Komora.Areas.User.Controllers
         /// <param name="unitOfWork"></param>
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
             _hostingEnvironment = hostingEnvironment;
         }
 
@@ -31,6 +35,7 @@ namespace Komora.Areas.User.Controllers
         /// Method that returns the view with the list of products
         /// </summary>
         /// <returns></returns>
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         public IActionResult Index()
         {
             var ProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit");
@@ -46,6 +51,8 @@ namespace Komora.Areas.User.Controllers
         /// <returns>
         /// View with the form to create or update a product
         /// </returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         public IActionResult Upsert(int? id)
         {
             IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
@@ -87,6 +94,8 @@ namespace Komora.Areas.User.Controllers
         /// Image of product
         /// </param>
         /// <returns></returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         [HttpPost]
         public IActionResult Upsert(ProductVM obj, IFormFile? file)
         {
@@ -127,7 +136,7 @@ namespace Komora.Areas.User.Controllers
 
                 _unitOfWork.Save();
                 TempData["success"] = "Product added successfully.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { Area = "User" });
             }
             else
             {
@@ -151,6 +160,8 @@ namespace Komora.Areas.User.Controllers
         /// </summary>
         /// <param name="id">id of the category to be deleted</param>
         /// <returns></returns>
+        [Area("Admin")]
+        [Authorize(Roles = SD.Role_Admin)]
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
@@ -172,6 +183,7 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
         }
 
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         [HttpGet]
         public IActionResult GetAll()
         {

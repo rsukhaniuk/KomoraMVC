@@ -52,7 +52,7 @@ namespace Komora.DataAccess.DbInitializer
 
                 _userManager.CreateAsync(new IdentityUser
                 {
-                    UserName = "admin",
+                    UserName = "admin@gmail.com",
                     Email = "admin@gmail.com",
                     PhoneNumber = "1111111111",
                     EmailConfirmed = true

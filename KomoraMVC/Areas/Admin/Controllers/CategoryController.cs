@@ -1,14 +1,18 @@
 ﻿using Komora.DataAccess.Repository;
 using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
+using Komora.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace Komora.Areas.User.Controllers
+namespace Komora.Areas.Admin.Controllers
 {
     /// <summary>
     /// Controller that manages the Category model
     /// </summary>
+    [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +23,7 @@ namespace Komora.Areas.User.Controllers
         /// <param name="unitOfWork"></param>
         public CategoryController(IUnitOfWork unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
