@@ -30,27 +30,68 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Category" asp-action="Index">Category</a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Product management
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Product" asp-action="Index">Products</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Category" asp-action="Index">Categories</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Unit" asp-action="Index">Units</a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Unit" asp-action="Index">Unit</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Recipe management
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Recipe" asp-action="Index">Recipes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="ProductRecipe" asp-action="Index">Ingridients</a>
+                                </li>
+                                
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Product" asp-action="Index">Product</a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Recipe management
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Recipe" asp-action="Index">Recipes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="ProductRecipe" asp-action="Index">Ingridients</a>
+                                </li>
+
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Recipe" asp-action="Index">Recipe</a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Menu management
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Meal" asp-action="Index">Meals</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="User" asp-controller="Menu" asp-action="Index">Menu</a>
+                                </li>
+
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="ProductRecipe" asp-action="Index">ProductRecipe</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Meal" asp-action="Index">Meal</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-controller="Menu" asp-action="Index">Menu</a>
-                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-controller="Inventory" asp-action="Index">Inventory</a>
                         </li>
@@ -75,6 +116,8 @@
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="//cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js" asp-append-version="true"></script>

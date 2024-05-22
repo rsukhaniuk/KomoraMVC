@@ -149,18 +149,19 @@ namespace Komora.Areas.User.Controllers
                 _unitOfWork.Save();
             }
 
-            foreach (var productRecipe in recipeVM.ProductRecipes)
-            {
-                productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
-                if (productRecipe.Id == 0)
+            if (recipeVM.ProductRecipes != null)
+                foreach (var productRecipe in recipeVM.ProductRecipes)
                 {
-                    _unitOfWork.ProductRecipe.Add(productRecipe);
+                    productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
+                    if (productRecipe.Id == 0)
+                    {
+                        _unitOfWork.ProductRecipe.Add(productRecipe);
+                    }
+                    else
+                    {
+                        _unitOfWork.ProductRecipe.Update(productRecipe);
+                    }
                 }
-                else
-                {
-                    _unitOfWork.ProductRecipe.Update(productRecipe);
-                }
-            }
 
             _unitOfWork.Save();
             TempData["success"] = "Recipe added successfully.";
