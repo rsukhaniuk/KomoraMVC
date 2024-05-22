@@ -149,22 +149,83 @@ namespace Komora.Areas.User.Controllers
                 _unitOfWork.Save();
             }
 
+            bool hasErrors = false;
+            string errorMessage = "";
+
             if (recipeVM.ProductRecipes != null)
+            {
                 foreach (var productRecipe in recipeVM.ProductRecipes)
                 {
-                    productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
-                    if (productRecipe.Id == 0)
+                    productRecipe.RecipeId = recipeVM.Recipe.Id;
+
+                    if (string.IsNullOrWhiteSpace(productRecipe.ProductId.ToString()) || productRecipe.ProductId == 0)
                     {
-                        _unitOfWork.ProductRecipe.Add(productRecipe);
+                        errorMessage += "Product is required. ";
+                        hasErrors = true;
                     }
-                    else
+
+                    // Припускаємо, що UnitId також є обов'язковим
+                    if (string.IsNullOrWhiteSpace(productRecipe.UnitId.ToString()) || productRecipe.UnitId == 0)
                     {
-                        _unitOfWork.ProductRecipe.Update(productRecipe);
+                        errorMessage += "Unit is required. ";
+                        hasErrors = true;
+                    }
+
+                    // Якщо немає помилок, додаємо або оновлюємо записи
+                    if (!hasErrors)
+                    {
+                        if (productRecipe.Id == 0)
+                        {
+                            _unitOfWork.ProductRecipe.Add(productRecipe);
+                        }
+                        else
+                        {
+                            _unitOfWork.ProductRecipe.Update(productRecipe);
+                        }
                     }
                 }
 
-            _unitOfWork.Save();
-            TempData["success"] = "Recipe added successfully.";
+                if (hasErrors)
+                {
+                    TempData["error"] = errorMessage; // Зберігаємо помилки у TempData
+                }
+                else
+                {
+                    _unitOfWork.Save();
+                    TempData["success"] = "Recipe added successfully.";
+                    return RedirectToAction("Index"); // Переходимо до списку рецептів, якщо все в порядку
+                }
+            }
+            return RedirectToAction("Index");
+
+            //if (recipeVM.ProductRecipes != null)
+            //    foreach (var productRecipe in recipeVM.ProductRecipes)
+            //    {
+            //        productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
+
+            //        if (string.IsNullOrWhiteSpace(productRecipe.ProductId.ToString()) || productRecipe.ProductId == 0)
+            //        {
+            //            errorMessage += "Product ID is required. ";
+            //            hasErrors = true;
+            //        }
+
+            //        if (!hasErrors)
+            //        {
+            //            if (productRecipe.Id == 0)
+            //            {
+            //                _unitOfWork.ProductRecipe.Add(productRecipe);
+            //            }
+            //            else
+            //            {
+            //                _unitOfWork.ProductRecipe.Update(productRecipe);
+            //            }
+            //        }
+            //    }
+            //if (!hasErrors)
+            //{
+            //    _unitOfWork.Save();
+            //    TempData["success"] = "Recipe added successfully.";
+            //}
 
             return RedirectToAction("Index");
         }
