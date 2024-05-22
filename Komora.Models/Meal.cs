@@ -5,6 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
@@ -17,5 +20,14 @@ namespace Komora.Models
         [DisplayName("Meal Name")]
         [MaxLength(50)]
         public string Name { get; set; }
+
+        // Foreign Key Property
+        [ValidateNever]
+        public string UserId { get; set; }
+
+        // Navigation Property
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public IdentityUser User { get; set; }
     }
 }

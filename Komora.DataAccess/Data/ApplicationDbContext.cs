@@ -65,6 +65,8 @@ namespace Komora.DataAccess.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Category 1"},
                 new Category { Id = 2, Name = "Category 2"},

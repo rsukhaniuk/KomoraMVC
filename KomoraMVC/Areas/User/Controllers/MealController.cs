@@ -1,9 +1,13 @@
 ﻿using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Komora.Areas.User.Controllers
 {
+    [Area("User")]
+    [Authorize]
     public class MealController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -23,7 +27,11 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var MealList = _unitOfWork.Meal.GetAll();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var MealList = _unitOfWork.Meal.GetAll(u => u.UserId == userId);
+
             return View(MealList);
         }
 
@@ -40,6 +48,11 @@ namespace Komora.Areas.User.Controllers
         {
             if (id == null || id == 0)
             {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                Meal mealObj = new Meal();
+                mealObj.UserId = userId;
                 return View(new Meal());
             }
             else
@@ -66,6 +79,11 @@ namespace Komora.Areas.User.Controllers
             {
                 if (obj.Id == 0)
                 {
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    obj.UserId = userId;
+
                     _unitOfWork.Meal.Add(obj);
                 }
                 else
@@ -109,7 +127,11 @@ namespace Komora.Areas.User.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Meal> objMealList = _unitOfWork.Meal.GetAll().ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+
+            List<Meal> objMealList = _unitOfWork.Meal.GetAll(u => u.UserId == userId).ToList();
             return Json(new { data = objMealList });
         }
     }
