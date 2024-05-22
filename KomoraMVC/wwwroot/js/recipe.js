@@ -11,7 +11,8 @@ function loadDataTable() {
             { data: 'id', "width": "5%" },
             { data: 'name', "width": "20%" },
             { data: 'cookingTime', "width": "20%" },
-            { data: 'preparation', "width": "30%" },
+            { data: 'preparation', "width": "20%" },
+            { data: 'meal.name', "width": "10%" },
             {
                 data: 'id',
                 "render": function (data) {

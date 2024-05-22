@@ -2,10 +2,12 @@
 using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
 using Komora.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting.Internal;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Komora.Areas.User.Controllers
@@ -13,6 +15,8 @@ namespace Komora.Areas.User.Controllers
     /// <summary>
     /// Controller that manages the Recipe model
     /// </summary>
+    [Area("User")]
+    [Authorize]
     public class RecipeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -36,7 +40,10 @@ namespace Komora.Areas.User.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            var RecipeList = _unitOfWork.Recipe.GetAll();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var RecipeList = _unitOfWork.Recipe.GetAll(u => u.UserId == userId, includeProperties: "Meal");
             return View(RecipeList);
         }
 
@@ -60,6 +67,12 @@ namespace Komora.Areas.User.Controllers
             }
             else
             {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                Recipe recipeObj = new Recipe();
+                recipeObj.UserId = userId;
+
                 recipeVM = new RecipeVM
                 {
                     ProductList = _unitOfWork.Product.GetAll().Select(p => new SelectListItem
@@ -72,7 +85,13 @@ namespace Komora.Areas.User.Controllers
                         Text = u.Name,
                         Value = u.Id.ToString()
                     }),
+                    MealList = _unitOfWork.Meal.GetAll(u => u.UserId == userId).Select(m => new SelectListItem
+                    {
+                        Text = m.Name,
+                        Value = m.Id.ToString()
+                    }),
                     Recipe = new Recipe(),
+
                     ProductRecipes = new List<ProductRecipe>()
                 };
             }
@@ -140,6 +159,11 @@ namespace Komora.Areas.User.Controllers
 
             if (recipeVM.Recipe.Id == 0)
             {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                recipeVM.Recipe.UserId = userId;
+
+
                 _unitOfWork.Recipe.Add(recipeVM.Recipe);
                 _unitOfWork.Save();
             }
@@ -386,7 +410,10 @@ namespace Komora.Areas.User.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Recipe> objRecipeList = _unitOfWork.Recipe.GetAll().ToList();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<Recipe> objRecipeList = _unitOfWork.Recipe.GetAll(u => u.UserId == userId, includeProperties: "Meal").ToList();
             return Json(new { data = objRecipeList });
         }
     }

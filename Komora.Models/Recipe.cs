@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
@@ -30,6 +31,23 @@ namespace Komora.Models
         [ValidateNever]
         [DisplayName("Image")]
         public string? imgUrl { get; set; }
+
+
+        [DisplayName("Meal")]
+        [Required]
+        public int MealId { get; set; }
+
+        [ForeignKey("MealId")]
+        [ValidateNever]
+        public Meal Meal { get; set; }
+
+        [ValidateNever]
+        public string UserId { get; set; }
+
+        // Navigation Property
+        [ForeignKey("UserId")]
+        [ValidateNever]
+        public IdentityUser User { get; set; }
 
     }   
        

@@ -34,6 +34,7 @@ namespace Komora.DataAccess.Repository
                 objFromDb.Name = obj.Name;
                 objFromDb.CookingTime = obj.CookingTime;
                 objFromDb.Preparation = obj.Preparation;
+                objFromDb.MealId = obj.MealId;
                 if (obj.imgUrl != null)
                 {
                     objFromDb.imgUrl = obj.imgUrl;

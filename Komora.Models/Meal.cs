@@ -29,5 +29,7 @@ namespace Komora.Models
         [ForeignKey("UserId")]
         [ValidateNever]
         public IdentityUser User { get; set; }
+
+
     }
 }
