@@ -42,22 +42,12 @@
                                 <li class="nav-item">
                                     <a class="dropdown-item" asp-area="User" asp-controller="Category" asp-action="Index">Categories</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="User" asp-controller="Unit" asp-action="Index">Units</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Recipe management
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="User" asp-controller="Recipe" asp-action="Index">Recipes</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="dropdown-item" asp-area="User" asp-controller="ProductRecipe" asp-action="Index">Ingridients</a>
-                                </li>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Unit" asp-action="Index">Units</a>
+                                    </li>
+                                }
                                 
                             </ul>
                         </li>
