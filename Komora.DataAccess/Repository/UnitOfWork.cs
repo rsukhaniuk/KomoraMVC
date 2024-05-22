@@ -1,5 +1,6 @@
 ﻿using Komora.DataAccess.Data;
 using Komora.DataAccess.Repository.IRepository;
+using Komora.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace Komora.DataAccess.Repository
             Meal = new MealRepository(_db);
             Menu = new MenuRepository(_db);
             Inventory = new InventoryRepository(_db);
+            MenuRecipe = new MenuRecipeRepository(_db);
         }
         
         /// <summary>
@@ -72,6 +74,11 @@ namespace Komora.DataAccess.Repository
         /// Property that returns the IInventoryRepository
         /// </summary>
         public IInventoryRepository Inventory { get; private set; }
+
+        /// <summary>
+        /// Property that returns the IInventoryRepository
+        /// </summary>
+        public IMenuRecipeRepository MenuRecipe { get; private set; }
 
         /// <summary>
         /// Method that disposes the database context

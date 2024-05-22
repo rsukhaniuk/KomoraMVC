@@ -16,7 +16,10 @@ namespace Komora.Models.ViewModels
         public IEnumerable<SelectListItem> MealList { get; set; }
 
         [ValidateNever]
-        public IEnumerable<SelectListItem> RecipeList { get; set; }
+        public Dictionary<Meal, IEnumerable<SelectListItem>> RecipeMealDict { get; set; }
+
+        [ValidateNever]
+        public List<MenuRecipe> MenuRecipes { get; set; }
 
 
         // Other properties

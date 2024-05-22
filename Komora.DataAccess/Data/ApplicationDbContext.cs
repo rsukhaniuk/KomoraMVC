@@ -57,6 +57,11 @@ namespace Komora.DataAccess.Data
         public DbSet<Menu> Menu { get; set; }
 
         /// <summary>
+        /// Property that represents the Menu table
+        /// </summary>
+        public DbSet<MenuRecipe> MenuRecipes { get; set; }
+
+        /// <summary>
         /// Property that represents the Inventory table
         /// </summary>
         public DbSet<InventoryItem> Inventory { get; set; }

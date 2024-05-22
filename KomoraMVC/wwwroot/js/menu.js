@@ -9,11 +9,8 @@ function loadDataTable() {
         "ajax": { url: '/user/menu/getall' },
         "columns": [
             { data: 'id', "width": "5%" },
-            { data: 'date', "width": "10%" },
-            { data: 'meal.name', "width": "10%" },
-            { data: 'recipe.name', "width": "10%" },
-            { data: 'servings', "width": "10%" },
-            { data: 'status', "width": "10%" },
+            { data: 'date', "width": "20%" },
+            { data: 'status', "width": "30%" },
             {
                 data: 'id',
                 "render": function (data) {
@@ -22,7 +19,7 @@ function loadDataTable() {
                       <a onClick=Delete('/user/menu/delete/${data}') class="btn btn-danger mx-2"> <i class="bi bi-trash-fill"></i> Delete</a>
                     </div>`
                 },
-                "width": "25%"
+                "width": "45%"
             }
         ]
     });

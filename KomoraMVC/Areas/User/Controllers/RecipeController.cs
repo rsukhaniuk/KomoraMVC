@@ -169,6 +169,10 @@ namespace Komora.Areas.User.Controllers
             }
             else
             {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                recipeVM.Recipe.UserId = userId;
+
                 _unitOfWork.Recipe.Update(recipeVM.Recipe);
                 _unitOfWork.Save();
             }
