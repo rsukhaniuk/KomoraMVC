@@ -46,12 +46,19 @@ namespace Komora.Areas.User.Controllers
             // Fetch and clone inventory to operate on a virtual level
             var virtualInventory = _db.Inventory
                 .Where(i => i.UserId == userId)
-                .ToList()
-                .ToDictionary(i => i.ProductId, i => new InventoryItem
-                {
-                    ProductId = i.ProductId,
-                    RemainQuantity = i.RemainQuantity
-                });
+                .GroupBy(i => i.ProductId)  // Group inventory items by ProductId
+                .Select(g => new {
+                    ProductId = g.Key,
+                    TotalRemainQuantity = g.Sum(item => item.RemainQuantity)  // Sum up all quantities for each ProductId
+                })
+                .ToDictionary(
+                    item => item.ProductId,
+                    item => new InventoryItem
+                    {
+                        ProductId = item.ProductId,
+                        RemainQuantity = item.TotalRemainQuantity  // Use the summed quantity
+                    }
+                );
 
             // Loop through each planning day
             for (DateTime day = startDate; day <= endDate; day = day.AddDays(1))
@@ -59,6 +66,7 @@ namespace Komora.Areas.User.Controllers
                 var dailyMenu = new Menu { Date = day, UserId = userId, Status = true };
                 var dailyMenuRecipes = new List<MenuRecipe>();
                 bool canPrepareAll = true;
+                Dictionary<Recipe, List<ProductRecipe>> suitableRecipes = new Dictionary<Recipe, List<ProductRecipe>>();
 
                 foreach (var meal in meals)
                 {
@@ -66,8 +74,8 @@ namespace Komora.Areas.User.Controllers
                     bool canPrepare = true;
                     double dailyRecipeCost = 0;
 
-                    Recipe newRecipe = new Recipe();
-                    var newIngredients = new List<ProductRecipe>();
+                    //Recipe newRecipe = new Recipe();
+                    //var newIngredients = new List<ProductRecipe>();
                     foreach (var recipe in mealRecipes)
                     {
 
@@ -94,8 +102,9 @@ namespace Komora.Areas.User.Controllers
                         }
                         if (canPrepare)
                         {
-                            newRecipe = recipe;
-                            newIngredients = productRecipes.Where(pr => pr.RecipeId == newRecipe.Id).ToList();
+                            suitableRecipes.Add(recipe, productRecipes.Where(pr => pr.RecipeId == recipe.Id).ToList());
+                            //newRecipe = recipe;
+                            //newIngredients = productRecipes.Where(pr => pr.RecipeId == newRecipe.Id).ToList();
                         }
                         
                     }
