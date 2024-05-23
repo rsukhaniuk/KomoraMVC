@@ -124,12 +124,15 @@ namespace Komora.Areas.User.Controllers
         [HttpPost]
         public IActionResult Upsert(MenuVM obj, IFormFile? file)
         {
-            var orders = CalculateOrders(obj, 1.0);
 
             obj.Menu.Status = obj.Status;
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             obj.Menu.UserId = userId;
+
+            var orders = CalculateOrders(obj, 1.0);
+
+           
 
             if (orders.Count == 0)
             {
@@ -209,51 +212,109 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var today = DateTime.Today; // Define the date limit for filtering menus.
+            var isMenuActive = menuVM.Menu.Status == true; // Check the status of the menu
+            var menuDate = menuVM.Menu.Date; // Get the date from the Menu object
 
-            // Fetch the necessary base data while still in IQueryable form.
-            var productData = _db.Products
-                .Select(p => new
+            if (menuDate >= today && isMenuActive)
+            {
+
+                // Extract the required RecipeIds and Servings from menuVM first
+                //var recipeIdsWithServings = menuVM.MenuRecipes
+                //    .Select(mr => new { mr.RecipeId, mr.Servings })
+                //    .ToList();
+
+                //var recipeIdsWithServingsQueryable = recipeIdsWithServings.AsQueryable(); // Convert the list to a queryable object to use it in the LINQ query
+
+
+                //// Fetch the necessary base data
+                //var productData = _db.Products
+                //    .Select(p => new
+                //    {
+                //        p.Id,
+                //        p.Name,
+                //        CategoryName = p.Category.Name,
+                //        p.Price,
+                //        p.Quantity,
+                //        PlanQuantitiesInfo = _db.ProductRecipe
+                //            .Join(_db.Recipes, // Join ProductRecipe with Recipes
+                //                pr => pr.RecipeId, // Use RecipeId from ProductRecipe as the join key
+                //                r => r.Id, // Use Id from Recipe as the join key
+                //                (pr, r) => new { ProductRecipe = pr, Recipe = r })// Project both ProductRecipe and Recipe in the result
+                //            .Where(joined => joined.ProductRecipe.ProductId == p.Id && joined.Recipe.UserId == userId)
+                //            .SelectMany(pr => recipeIdsWithServingsQueryable
+                //                .Where(rs => rs.RecipeId == pr.ProductRecipe.RecipeId)
+                //                .Select(rs => new { rs.Servings, pr.ProductRecipe.Quantity })) // Use the in-memory list
+                //            .ToList(),
+                //        Remains = _db.Inventory
+                //            .Where(i => i.ProductId == p.Id && i.UserId == userId)
+                //            .Sum(i => (i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity))
+                //    })
+                //    .ToList(); // Execute the query and bring the results into memory
+
+                var recipeIds = menuVM.MenuRecipes.Select(mr => mr.RecipeId).ToList(); // Extract only RecipeIds first
+
+                // Fetch necessary base data without trying to filter on the in-memory list
+                var productData = _db.Products
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        CategoryName = p.Category.Name,
+                        p.Price,
+                        p.Quantity,
+                        ProductRecipes = _db.ProductRecipe
+                            .Where(pr => pr.ProductId == p.Id && recipeIds.Contains(pr.RecipeId)) // Only take ProductRecipes that match the RecipeIds
+                            .Join(_db.Recipes,
+                                pr => pr.RecipeId,
+                                r => r.Id,
+                                (pr, r) => new { ProductRecipe = pr, Recipe = r }) // Join here is fine as it involves only DB sets
+                            .ToList(),
+                        Remains = _db.Inventory
+                            .Where(i => i.ProductId == p.Id && i.UserId == userId)
+                            .Sum(i => i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity)
+                    })
+                    .ToList(); // Execute the DB query and retrieve the results
+
+                // Now apply any in-memory operations
+                var finalData = productData.Select(p => new
                 {
                     p.Id,
                     p.Name,
-                    CategoryName = p.Category.Name,
+                    p.CategoryName,
                     p.Price,
                     p.Quantity,
-                    PlanQuantitiesInfo = _db.ProductRecipe
-                        .Join(_db.Recipes, // Join ProductRecipe with Recipes
-                            pr => pr.RecipeId, // Use RecipeId from ProductRecipe as the join key
-                            r => r.Id, // Use Id from Recipe as the join key
-                            (pr, r) => new { ProductRecipe = pr, Recipe = r })// Project both ProductRecipe and Recipe in the result
-                        .Where(joined => joined.ProductRecipe.ProductId == p.Id && joined.Recipe.UserId == userId)
+                    PlanQuantitiesInfo = p.ProductRecipes
                         .SelectMany(pr => menuVM.MenuRecipes
-                            .Where(m => m.RecipeId == pr.ProductRecipe.Id && menuVM.Menu.Date >= today && menuVM.Status == true)
-                            .Select(m => new { m.Servings, pr.ProductRecipe.Quantity })) // Select needed data for further in-memory processing
-                        .ToList(), // Fetch data into memory here
-                    Remains = _db.Inventory
-                        .Where(i => i.ProductId == p.Id && i.UserId == userId)
-                        .Sum(i => (i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity))
-                })
-                .ToList(); // Execute the query and bring the results into memory
+                            .Where(mr => mr.RecipeId == pr.ProductRecipe.RecipeId)
+                            .Select(mr => new { mr.Servings, pr.ProductRecipe.Quantity }))
+                        .ToList(),
+                    p.Remains
+                }).ToList();
 
 
-            // Process the calculations in memory
-            var orders = productData
-                .Select(p => new OrderVM
-                {
-                    ProductId = p.Id,
-                    ProductName = p.Name,
-                    CategoryName = p.CategoryName,
-                    OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
-                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
-                    OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
-                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
-                })
-                .Where(p => p.OrderQuan > 0)
-                .ToList();
+                // Process the calculations in memory
+                var orders = finalData
+                    .Select(p => new OrderVM
+                    {
+                        ProductId = p.Id,   
+                        ProductName = p.Name,
+                        CategoryName = p.CategoryName,
+                        OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
+                            - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
+                        OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
+                            - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
+                    })
+                    .Where(p => p.OrderQuan > 0)
+                    .ToList();
 
-            
 
-            return orders;
+
+                return orders;
+            }
+            else
+            {
+                return new List<OrderVM>();
+            }
         }
 
 
