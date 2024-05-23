@@ -11,18 +11,27 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
-    public class Menu
+    public class OrderItem
     {
         [Key]
         public int Id { get; set; }
 
-        
 
+        [ValidateNever]
+        public int ProductId { get; set; }
+
+        // Navigation Property
+        [ForeignKey("ProductId")]
+        [ValidateNever]
+        public Product Product { get; set; }
+
+        //public string ProductName { get; set; }
+        //public string CategoryName { get; set; }
+        public double OrderQuan { get; set; }
+        public double OrderPrice { get; set; }
+        
         public Nullable<System.DateTime> Date { get; set; }
 
-        public Nullable<bool> Status { get; set; }
-
-        // Foreign Key Property
         [ValidateNever]
         public string UserId { get; set; }
 

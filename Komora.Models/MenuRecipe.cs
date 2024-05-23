@@ -20,12 +20,7 @@ namespace Komora.Models
         [DisplayName("Number of servings")]
         public int Servings { get; set; }
 
-        //[DisplayName("Meal")]
-        //public int MealId { get; set; }
-
-        //[ForeignKey("MealId")]
-        //[ValidateNever]
-        //public Meal Meal { get; set; }
+        
 
         [DisplayName("Recipe")]
         public int RecipeId { get; set; }

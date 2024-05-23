@@ -66,6 +66,11 @@ namespace Komora.DataAccess.Data
         /// </summary>
         public DbSet<InventoryItem> Inventory { get; set; }
 
+        /// <summary>
+        /// Property that represents the Inventory table
+        /// </summary>
+        public DbSet<OrderItem> OrderItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

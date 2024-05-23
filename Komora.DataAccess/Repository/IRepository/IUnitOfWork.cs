@@ -21,6 +21,8 @@ namespace Komora.DataAccess.Repository.IRepository
         IMenuRecipeRepository MenuRecipe { get; }
 
         IInventoryRepository Inventory { get; }
+
+        IOrderItemRepository OrderItem { get; }
         void Save();
     }
 }
