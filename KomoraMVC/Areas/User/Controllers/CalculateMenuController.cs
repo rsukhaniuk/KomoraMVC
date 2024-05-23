@@ -66,13 +66,13 @@ namespace Komora.Areas.User.Controllers
                 var dailyMenu = new Menu { Date = day, UserId = userId, Status = true };
                 var dailyMenuRecipes = new List<MenuRecipe>();
                 bool canPrepareAll = true;
-                Dictionary<Recipe, List<ProductRecipe>> suitableRecipes = new Dictionary<Recipe, List<ProductRecipe>>();
 
                 foreach (var meal in meals)
                 {
                     var mealRecipes = recipes.Where(r => r.MealId == meal.Id).ToList();
                     bool canPrepare = true;
                     double dailyRecipeCost = 0;
+                    Dictionary<Recipe, List<ProductRecipe>> suitableRecipes = new Dictionary<Recipe, List<ProductRecipe>>();
 
                     //Recipe newRecipe = new Recipe();
                     //var newIngredients = new List<ProductRecipe>();
@@ -108,15 +108,62 @@ namespace Komora.Areas.User.Controllers
                         }
                         
                     }
-                    if (newIngredients.Count > 0)
+                    if (suitableRecipes.Count > 0)
                     {
-                        dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = newRecipe.Id, Servings = servingsPerMeal });
-                        totalCost += dailyRecipeCost;
-                        foreach (var ingredient in newIngredients)
+
+                        // Find the menu from the previous day
+                        var previousMenu = plannedMenus.FirstOrDefault(menu => menu.Menu.Date == day.AddDays(-1));
+                        HashSet<int> previousDayRecipeIds = new HashSet<int>();
+                        if (previousMenu != null)
                         {
-                            var requiredQuantity = ingredient.Quantity * servingsPerMeal;
-                            virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Add back to virtual inventory
+                            foreach (var recipePair in suitableRecipes)
+                            {
+                                var currRecipe = recipePair.Key;
+                                var currIngredients = recipePair.Value;
+                                if (!previousMenu.MenuRecipes.Any(mr => mr.RecipeId == currRecipe.Id) || suitableRecipes.Count == 1)
+                                {
+                                    dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = currRecipe.Id, Servings = servingsPerMeal });
+                                    // Calculate the required quantity of each ingredient and update virtual inventory
+                                    foreach (var ingredient in currIngredients)
+                                    {
+                                        var requiredQuantity = ingredient.Quantity * servingsPerMeal;
+                                        virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
+                                    }
+                                    break;
+                                }
+                            }
+
                         }
+                        else
+                        {
+                            var recipe = suitableRecipes.First().Key;
+                            var ingredients = suitableRecipes.First().Value;
+
+                            dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = recipe.Id, Servings = servingsPerMeal });
+
+                            // Calculate the required quantity of each ingredient and update virtual inventory
+                            foreach (var ingredient in ingredients)
+                            {
+                                var requiredQuantity = ingredient.Quantity * servingsPerMeal;
+                                virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
+                            }
+                        }
+
+                        
+
+                        //var previousMenu = plannedMenus.FirstOrDefault(menu => menu.Menu.Date == day.AddDays(-1));
+                        //if (previousMenu != null)
+                        //{
+                        //    var prevDailyMenuRecipes = previousMenu.MenuRecipes;
+                        //}
+                        //if (suitableRecipes.Count == 1)
+                        //    dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = suitableRecipes.Id, Servings = servingsPerMeal });
+
+                        //foreach (var ingredient in newIngredients)
+                        //{
+                        //    var requiredQuantity = ingredient.Quantity * servingsPerMeal;
+                        //    virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Add back to virtual inventory
+                        //}
                     }
                 }
 
