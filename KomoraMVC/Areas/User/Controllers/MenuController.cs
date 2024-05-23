@@ -404,6 +404,7 @@ namespace Komora.Areas.User.Controllers
         public IActionResult DeleteMenuRecipe(int? id)
         {
             var menuRecipeToBeDeleted = _unitOfWork.MenuRecipe.Get(u => u.Id == id);
+
             if (menuRecipeToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
