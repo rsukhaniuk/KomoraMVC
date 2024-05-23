@@ -1,6 +1,6 @@
 ﻿@model MenuVM
 
-<form method="post" enctype="multipart/form-data">
+<form id="menuForm" method="post" enctype="multipart/form-data">
     <div class="border p-3 mt-4">
 
         <div class="row pb-2">
@@ -21,31 +21,13 @@
                     <label class="form-check-label" for="menuStatusDisplay">Active</label>
                     <span asp-validation-for="StatusForDisplay" class="text-danger"></span>
                 </div>
-                @* <div class="form-group mb-3">
-                    <label asp-for="Menu.MealId" class="control-label pb-1"></label>
-                    <select asp-for="@Model.Menu.MealId" asp-items="@Model.MealList" class="form-select">
-                        <option disabled selected>Select Meal</option>
-                    </select>
-                    <span asp-validation-for="Menu.MealId" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Menu.RecipeId" class="control-label pb-1"></label>
-                    <select asp-for="@Model.Menu.RecipeId" asp-items="@Model.RecipeList" class="form-select">
-                        <option disabled selected>Select Recipe</option>
-                    </select>
-                    <span asp-validation-for="Menu.RecipeId" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Menu.Servings" class="control-label pb-1"></label>
-                    <input asp-for="Menu.Servings" class="form-control" />
-                    <span asp-validation-for="Menu.Servings" class="text-danger"></span>
-                </div> *@
+                
                 <div class="border p-3 mt-4" id="menurecipes-container">
                     <div class="row pb-2">
                         <h4>MenuRecipes</h4>
                         <hr />
                     </div>
-                    @* <button class="btn btn-success float-right" type="button" id="add-ingredient">Add Ingredient</button> *@
+                    
 
                     <div id="MenuRecipes">
                         @{
@@ -55,19 +37,6 @@
                         {
                              <input type="hidden" asp-for="MenuRecipes[i].Id" /> 
                             <div class="menurecipe-group row">
-    @*                             <div class="col-md-3 form-group mb-3">
-
-                                    <label class="control-label">Select Recipe for @entry.Key.Name</label>
-                                    <select name="MenuRecipes[i].RecipeId" class="form-select">
-                                        <option value="">Select Recipe</option>
-                                        @foreach (var recipe in entry.Value)
-                                        {
-                                            <option value="@recipe.Value">@recipe.Text</option>
-                                        }
-
-                                    </select>
-                                </div> *@
-
                                 <div class="col-md-3 form-group mb-3">
                                     <label class="control-label">Select Recipe for @entry.Key.Name</label>
                                     <select asp-for="@Model.MenuRecipes[i].RecipeId" asp-items="entry.Value" class="form-select">
@@ -120,40 +89,45 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-
-        $(document).on('click', '.remove-menurecipe', function () {
-            $(this).closest('.menurecipe-group').remove();  // Remove the ingredient group
-
-            });
-
-        });
-
-        function confirmDelete(element, url) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: 'DELETE',
-                        success: function (response) {
-                            $(element).closest('.menurecipe-group').remove(); // Remove the ingredient group on success
-                            toastr.success(response.message);  // Display a success message
-                        },
-                        error: function (xhr, status, error) {
-                            toastr.error("Error: " + error);  // Display an error message
+        $(document).ready(function () {
+            $('#menuForm').submit(function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("Upsert", "Menu")', // Ensure the URL is correct
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            setTimeout(function () {
+                                window.location.href = '@Url.Action("Index", "Menu")'; // Redirect after notification
+                            }, 3000);
+                        } else {
+                            toastr.error(response.message);
+                            if (response.shoppingList && response.shoppingList.length > 0) {
+                                // Optionally open a new window with shopping list details
+                                var shoppingWindow = window.open("", "_blank");
+                                var html = "<h1>Shopping List</h1><ul>";
+                                response.shoppingList.forEach(function (item) {
+                                    html += "<li>" + item + "</li>";
+                                });
+                                html += "</ul>";
+                                shoppingWindow.document.write(html);
+                            }
                         }
-                    });
-                }
+                    },
+                    error: function (xhr, status, error) {
+                        toastr.error("Error: " + error);
+                    }
+                });
             });
-        }
+        });
     </script>
+    
 }  

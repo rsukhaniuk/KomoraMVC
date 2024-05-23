@@ -1,4 +1,5 @@
-﻿using Komora.DataAccess.Repository;
+﻿using Komora.DataAccess.Data;
+using Komora.DataAccess.Repository;
 using Komora.DataAccess.Repository.IRepository;
 using Komora.Models;
 using Komora.Models.ViewModels;
@@ -21,15 +22,17 @@ namespace Komora.Areas.User.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly ApplicationDbContext _db;
 
         /// <summary>
         /// Constructor that initializes the unitOfWork
         /// </summary>
         /// <param name="unitOfWork"></param>
-        public MenuController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment)
+        public MenuController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment, ApplicationDbContext db)
         {
             this._unitOfWork = unitOfWork;
             _hostingEnvironment = hostingEnvironment;
+            this._db = db;
         }
 
         /// <summary>
@@ -121,112 +124,141 @@ namespace Komora.Areas.User.Controllers
         [HttpPost]
         public IActionResult Upsert(MenuVM obj, IFormFile? file)
         {
+            var orders = CalculateOrders(obj, 1.0);
+
             obj.Menu.Status = obj.Status;
-            if (obj.Menu.Id == 0)
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            obj.Menu.UserId = userId;
+
+            if (orders.Count == 0)
             {
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                obj.Menu.UserId = userId;
+                
 
-                _unitOfWork.Menu.Add(obj.Menu);
-                _unitOfWork.Save();
-            }
-            else
-            {
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                obj.Menu.UserId = userId;
 
-                _unitOfWork.Menu.Update(obj.Menu);
-                _unitOfWork.Save();
-            }
-
-            bool hasErrors = false;
-            string errorMessage = "";
-
-            if (obj.MenuRecipes != null)
-            {
-                foreach (var menuRecipe in obj.MenuRecipes)
+                if (obj.Menu.Id == 0)
                 {
-                    menuRecipe.MenuId = obj.Menu.Id;
-
-                    if (string.IsNullOrWhiteSpace(menuRecipe.RecipeId.ToString()) || menuRecipe.RecipeId == 0)
-                    {
-                        errorMessage += "Recipe is required. ";
-                        hasErrors = true;
-                    }
-
-                    // Припускаємо, що UnitId також є обов'язковим
-                    
-
-                    // Якщо немає помилок, додаємо або оновлюємо записи
-                    if (!hasErrors)
-                    {
-                        if (menuRecipe.Id == 0)
-                        {
-                            _unitOfWork.MenuRecipe.Add(menuRecipe);
-                        }
-                        else
-                        {
-                            _unitOfWork.MenuRecipe.Update(menuRecipe);
-                        }
-                    }
-                }
-
-                if (hasErrors)
-                {
-                    TempData["error"] = errorMessage; // Зберігаємо помилки у TempData
+                    _unitOfWork.Menu.Add(obj.Menu);
+                    _unitOfWork.Save();
                 }
                 else
                 {
+                    _unitOfWork.Menu.Update(obj.Menu);
                     _unitOfWork.Save();
-                    TempData["success"] = "Menu added successfully.";
-                    return RedirectToAction("Index"); // Переходимо до списку рецептів, якщо все в порядку
                 }
+
+                bool hasErrors = false;
+                string errorMessage = "";
+
+                if (obj.MenuRecipes != null)
+                {
+                    foreach (var menuRecipe in obj.MenuRecipes)
+                    {
+                        menuRecipe.MenuId = obj.Menu.Id;
+
+                        if (string.IsNullOrWhiteSpace(menuRecipe.RecipeId.ToString()) || menuRecipe.RecipeId == 0)
+                        {
+                            errorMessage += "Recipe is required. ";
+                            hasErrors = true;
+                        }
+
+                        // Припускаємо, що UnitId також є обов'язковим
+
+
+                        // Якщо немає помилок, додаємо або оновлюємо записи
+                        if (!hasErrors)
+                        {
+                            if (menuRecipe.Id == 0)
+                            {
+                                _unitOfWork.MenuRecipe.Add(menuRecipe);
+                            }
+                            else
+                            {
+                                _unitOfWork.MenuRecipe.Update(menuRecipe);
+                            }
+                        }
+                    }
+
+                    if (hasErrors)
+                    {
+                        TempData["error"] = errorMessage; // Зберігаємо помилки у TempData
+                    }
+                    else
+                    {
+                        _unitOfWork.Save();
+                        TempData["success"] = "Menu added successfully.";
+                        return RedirectToAction("Index"); // Переходимо до списку рецептів, якщо все в порядку
+                    }
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            else
+            {
+                return Json(new { data = orders });
+            }
 
-            //if (ModelState.IsValid)
-            //{
-            //    obj.Menu.Status = obj.Status;
-            //    if (obj.Menu.Id == 0)
-            //    {
-            //        _unitOfWork.Menu.Add(obj.Menu);
-            //    }
-            //    else
-            //    {
-            //        _unitOfWork.Menu.Update(obj.Menu);
-            //    }
+            
 
-            //    _unitOfWork.Save();
-            //    if (obj.Menu.Id == 0)
-            //    {
-            //        TempData["success"] = "Menu added successfully.";
 
-            //    }
-            //    else
-            //    {
-            //        TempData["success"] = "Menu updated successfully.";
-
-            //    }
-            //    return RedirectToAction("Index");
-            //}
-            //else
-            //{
-            //    obj.MealList = _unitOfWork.Meal.GetAll().Select(i => new SelectListItem
-            //    {
-            //        Text = i.Name,
-            //        Value = i.Id.ToString()
-            //    });
-            //    obj.RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
-            //    {
-            //        Text = i.Name,
-            //        Value = i.Id.ToString()
-            //    });
-            //    return View(obj);
-
-            //}
         }
+
+        public List<OrderVM> CalculateOrders(MenuVM menuVM, double tolerance)
+        {
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var today = DateTime.Today; // Define the date limit for filtering menus.
+
+            // Fetch the necessary base data while still in IQueryable form.
+            var productData = _db.Products
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    CategoryName = p.Category.Name,
+                    p.Price,
+                    p.Quantity,
+                    PlanQuantitiesInfo = _db.ProductRecipe
+                        .Join(_db.Recipes, // Join ProductRecipe with Recipes
+                            pr => pr.RecipeId, // Use RecipeId from ProductRecipe as the join key
+                            r => r.Id, // Use Id from Recipe as the join key
+                            (pr, r) => new { ProductRecipe = pr, Recipe = r })// Project both ProductRecipe and Recipe in the result
+                        .Where(joined => joined.ProductRecipe.ProductId == p.Id && joined.Recipe.UserId == userId)
+                        .SelectMany(pr => menuVM.MenuRecipes
+                            .Where(m => m.RecipeId == pr.ProductRecipe.Id && menuVM.Menu.Date >= today && menuVM.Status == true)
+                            .Select(m => new { m.Servings, pr.ProductRecipe.Quantity })) // Select needed data for further in-memory processing
+                        .ToList(), // Fetch data into memory here
+                    Remains = _db.Inventory
+                        .Where(i => i.ProductId == p.Id && i.UserId == userId)
+                        .Sum(i => (i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity))
+                })
+                .ToList(); // Execute the query and bring the results into memory
+
+
+            // Process the calculations in memory
+            var orders = productData
+                .Select(p => new OrderVM
+                {
+                    ProductId = p.Id,
+                    ProductName = p.Name,
+                    CategoryName = p.CategoryName,
+                    OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
+                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
+                    OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
+                        - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
+                })
+                .Where(p => p.OrderQuan > 0)
+                .ToList();
+
+            
+
+            return orders;
+        }
+
+
+
+
 
         [HttpDelete]
         public IActionResult DeleteMenuRecipe(int? id)

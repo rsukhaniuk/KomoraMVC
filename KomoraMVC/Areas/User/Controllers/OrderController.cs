@@ -32,7 +32,7 @@ namespace Komora.Areas.User.Controllers
             this._db = db;
         }
 
-        public List<OrderVM> CalculateOrders()
+        public List<OrderVM> CalculateOrders(double tolerance)
         {
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -69,6 +69,7 @@ namespace Komora.Areas.User.Controllers
                 })
                 .ToList(); // Execute the query and bring the results into memory
 
+
             // Process the calculations in memory
             var orders = productData
                 .Select(p => new OrderVM
@@ -76,19 +77,13 @@ namespace Komora.Areas.User.Controllers
                     ProductId = p.Id,
                     ProductName = p.Name,
                     CategoryName = p.CategoryName,
-                    OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * 1.2)
+                    OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
                         - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
-                    OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * 1.2)
+                    OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
                         - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
                 })
                 .Where(p => p.OrderQuan > 0)
                 .ToList();
-
-            //orders.ForEach(o =>
-            //{
-            //    var product = productData.First(p => p.Id == o.ProductId);
-            //    o.OrderPrice = o.OrderQuan * product.Price;
-            //});
 
             return orders;
 
@@ -96,7 +91,7 @@ namespace Komora.Areas.User.Controllers
 
         public IActionResult Index()
         {
-            return View(CalculateOrders());
+            return View(CalculateOrders(1.2));
         }
 
         [HttpPost]
@@ -105,7 +100,7 @@ namespace Komora.Areas.User.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var orders = CalculateOrders();
+            var orders = CalculateOrders(1.2);
             foreach (var item in orders)
             {
                 InventoryItem inventoryItem = new InventoryItem();

@@ -25,7 +25,7 @@ namespace Komora.Models.ViewModels
         // Other properties
         public bool StatusForDisplay
         {
-            get => Status ?? false; // Default to false or true depending on your logic
+            get => Status ?? true; // Default to false or true depending on your logic
             set => Status = value;
         }
 
