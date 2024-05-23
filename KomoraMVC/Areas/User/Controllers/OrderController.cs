@@ -91,20 +91,20 @@ namespace Komora.Areas.User.Controllers
             return orders;
         }
 
-        public IActionResult Index(string orders)
+        public IActionResult Index(string shoppingListVM)
         {
-            List<OrderVM> orderList = JsonConvert.DeserializeObject<List<OrderVM>>(HttpUtility.UrlDecode(orders));
-            calculatedOrder = orderList;
-            return View(orderList);
+            ShoppingListVM ShoppingListVM = JsonConvert.DeserializeObject<ShoppingListVM>(HttpUtility.UrlDecode(shoppingListVM));
+            
+            return View(ShoppingListVM);
         }
 
         [HttpPost]
-        public IActionResult Insert(List<OrderVM> orders)
+        public IActionResult Insert(ShoppingListVM shoppingListVM)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            foreach (var item in orders)
+            foreach (var item in shoppingListVM.OrderList)
             {
                 InventoryItem inventoryItem = new InventoryItem();
                 inventoryItem.UserId = userId;
@@ -118,7 +118,7 @@ namespace Komora.Areas.User.Controllers
             }
             _unitOfWork.Save();
 
-            foreach (var item in orders)
+            foreach (var item in shoppingListVM.OrderList)
             {
                 var inventoryItems = _unitOfWork.Inventory
                     .GetAll(i => i.ProductId == item.ProductId)
@@ -144,6 +144,8 @@ namespace Komora.Areas.User.Controllers
                     _unitOfWork.Inventory.Update(inventoryItem);
                 }
 
+
+
                 //// Обробка випадків, коли не всю кількість можна розподілити
                 //if (totalPlanToAdd > 0)
                 //{
@@ -151,9 +153,62 @@ namespace Komora.Areas.User.Controllers
                 //}
             }
 
-            _unitOfWork.Save();
-            TempData["success"] = "Products added successfully.";
+            if (shoppingListVM.Menu.Id == 0)
+            {
+                _unitOfWork.Menu.Add(shoppingListVM.Menu);
+                _unitOfWork.Save();
+            }
+            else
+            {
+                _unitOfWork.Menu.Update(shoppingListVM.Menu);
+                _unitOfWork.Save();
+            }
+
+            bool hasErrors = false;
+            string errorMessage = "";
+
+            if (shoppingListVM.MenuRecipes != null)
+            {
+                foreach (var menuRecipe in shoppingListVM.MenuRecipes)
+                {
+                    menuRecipe.MenuId = shoppingListVM.Menu.Id;
+
+                    if (string.IsNullOrWhiteSpace(menuRecipe.RecipeId.ToString()) || menuRecipe.RecipeId == 0)
+                    {
+                        errorMessage += "Recipe is required. ";
+                        hasErrors = true;
+                    }
+
+                    // Припускаємо, що UnitId також є обов'язковим
+
+
+                    // Якщо немає помилок, додаємо або оновлюємо записи
+                    if (!hasErrors)
+                    {
+                        if (menuRecipe.Id == 0)
+                        {
+                            _unitOfWork.MenuRecipe.Add(menuRecipe);
+                        }
+                        else
+                        {
+                            _unitOfWork.MenuRecipe.Update(menuRecipe);
+                        }
+                    }
+                }
+
+                if (hasErrors)
+                {
+                    TempData["error"] = errorMessage; // Зберігаємо помилки у TempData
+                }
+                else
+                {
+                    _unitOfWork.Save();
+                    TempData["success"] = "Products added successfully.";
+                    return RedirectToAction("Index", "Home"); ; 
+                }
+            }
             return RedirectToAction("Index", "Home");
+
         }
 
     }

@@ -123,9 +123,11 @@
                                     // Prepare the base URL
                                     var baseUrl = '@Url.Action("Index", "Order")';
                                     // Serialize the orders data and append it as a query parameter
-                                    var ordersData = encodeURIComponent(JSON.stringify(response.orders));
-                                    // Redirect to the Order Index with orders data
-                                    window.location.href = baseUrl + '?orders=' + ordersData;
+                                    var shoppingVMData = encodeURIComponent(JSON.stringify(response.shoppingListVM));
+
+
+                                    // Open the Order Index with orders data in a new tab
+                                    window.open(baseUrl + '?shoppingListVM=' + shoppingVMData, '_blank');
                                 }
                             });
                         }

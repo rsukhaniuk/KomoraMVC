@@ -1,4 +1,4 @@
-﻿@model List<OrderVM>
+﻿@model ShoppingListVM
 
 <h2>Calculated Orders</h2>
 
@@ -15,47 +15,60 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.Count; i++)
+            @for (int i = 0; i < Model.OrderList.Count; i++)
             {
                 <tr>
                     <td>
-                        @Model[i].ProductId
-                        <input type="hidden" name="[@i].ProductId" value="@Model[i].ProductId" />
+                        <input type="hidden" name="OrderList[@i].ProductId" value="@Model.OrderList[i].ProductId" />
+                        @Model.OrderList[i].ProductId
                     </td>
                     <td>
-                        @Model[i].ProductName
-                        <input type="hidden" name="[@i].ProductName" value="@Model[i].ProductName" />
+                        <input type="hidden" name="OrderList[@i].ProductName" value="@Model.OrderList[i].ProductName" />
+                        @Model.OrderList[i].ProductName
                     </td>
                     <td>
-                        @Model[i].CategoryName
-                        <input type="hidden" name="[@i].CategoryName" value="@Model[i].CategoryName" />
+                        <input type="hidden" name="OrderList[@i].CategoryName" value="@Model.OrderList[i].CategoryName" />
+                        @Model.OrderList[i].CategoryName
                     </td>
                     <td>
-                        @Model[i].OrderQuan
-                        <input type="hidden" name="[@i].OrderQuan" value="@Model[i].OrderQuan" />
+                        <input type="hidden" name="OrderList[@i].OrderQuan" value="@Model.OrderList[i].OrderQuan" />
+                        @Model.OrderList[i].OrderQuan
                     </td>
                     <td>
-                        @Model[i].Unit
-                        <input type="hidden" name="[@i].Unit" value="@Model[i].Unit" />
+                        <input type="hidden" name="OrderList[@i].Unit" value="@Model.OrderList[i].Unit" />
+                        @Model.OrderList[i].Unit
                     </td>
                     <td>
-                        ₴@Model[i].OrderPrice.ToString("N2")
-                        <input type="hidden" name="[@i].OrderPrice" value="@Model[i].OrderPrice" />
+                        <input type="hidden" name="OrderList[@i].OrderPrice" value="@Model.OrderList[i].OrderPrice" />
+                        ₴@Model.OrderList[i].OrderPrice.ToString("N2")
                     </td>
-                    <input type="hidden" name="[@i].PlanQuan" value="@Model[i].PlanQuan" />
+                    <input type="hidden" name="OrderList[@i].PlanQuan" value="@Model.OrderList[i].PlanQuan" />
                 </tr>
             }
         </tbody>
         <tfoot>
             <tr>
                 <th colspan="5">Total</th>
-                <th>₴@Model.Sum(item => item.OrderPrice).ToString("N2")</th>
-            </tr>
-            <tr>
-                <th colspan="6">
-                    <button type="submit" class="btn btn-primary">Add to DB</button>
-                </th>
+                <th>₴@Model.OrderList.Sum(item => item.OrderPrice).ToString("N2")</th>
             </tr>
         </tfoot>
     </table>
+
+    <!-- Hidden fields for Menu -->
+    <input type="hidden" name="Menu.Date" value="@Model.Menu.Date" />
+    <input type="hidden" name="Menu.Status" value="@Model.Menu.Status" />
+    <input type="hidden" name="Menu.UserId" value="@Model.Menu.UserId" />
+
+    <!-- Hidden fields for MenuRecipes -->
+    @for (int j = 0; j < Model.MenuRecipes.Count; j++)
+    {
+        <input type="hidden" name="MenuRecipes[@j].Id" value="@Model.MenuRecipes[j].Id" />
+        <input type="hidden" name="MenuRecipes[@j].Servings" value="@Model.MenuRecipes[j].Servings" />
+        <input type="hidden" name="MenuRecipes[@j].RecipeId" value="@Model.MenuRecipes[j].RecipeId" />
+        <input type="hidden" name="MenuRecipes[@j].MenuId" value="@Model.MenuRecipes[j].MenuId" />
+    }
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Add to DB</button>
+    </div>
 </form>

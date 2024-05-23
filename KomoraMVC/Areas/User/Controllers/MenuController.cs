@@ -130,14 +130,12 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             obj.Menu.UserId = userId;
 
-            var orders = CalculateOrders(obj, 1.0); // tolerance
+            var calcOrders = CalculateOrders(obj, 1.0); // tolerance
 
            
 
-            if (orders.Count == 0)
+            if (calcOrders.Count == 0)
             {
-                
-
 
                 if (obj.Menu.Id == 0)
                 {
@@ -197,7 +195,14 @@ namespace Komora.Areas.User.Controllers
             }
             else
             {
-                return Json(new { success = false, message = "Insufficient resources to create the menu.", orders = orders });
+                var orders = CalculateOrders(obj, 1.2); // tolerance
+                ShoppingListVM shoppingListVM = new ShoppingListVM
+                {
+                    OrderList = orders,
+                    Menu = obj.Menu,
+                    MenuRecipes = obj.MenuRecipes
+                };
+                return Json(new { success = false, message = "Insufficient resources to create the menu.", shoppingListVM = shoppingListVM});
             }
 
             
