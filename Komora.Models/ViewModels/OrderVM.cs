@@ -16,5 +16,6 @@ namespace Komora.Models.ViewModels
         public double OrderQuan { get; set; }
         public string Unit { get; set; }
         public double OrderPrice { get; set; }
+        public double PlanQuan { get; set; }
     }
 }

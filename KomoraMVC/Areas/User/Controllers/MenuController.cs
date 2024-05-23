@@ -130,7 +130,7 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             obj.Menu.UserId = userId;
 
-            var orders = CalculateOrders(obj, 1.0);
+            var orders = CalculateOrders(obj, 1.0); // tolerance
 
            
 
@@ -218,39 +218,6 @@ namespace Komora.Areas.User.Controllers
             if (menuDate >= today && isMenuActive)
             {
 
-                // Extract the required RecipeIds and Servings from menuVM first
-                //var recipeIdsWithServings = menuVM.MenuRecipes
-                //    .Select(mr => new { mr.RecipeId, mr.Servings })
-                //    .ToList();
-
-                //var recipeIdsWithServingsQueryable = recipeIdsWithServings.AsQueryable(); // Convert the list to a queryable object to use it in the LINQ query
-
-
-                //// Fetch the necessary base data
-                //var productData = _db.Products
-                //    .Select(p => new
-                //    {
-                //        p.Id,
-                //        p.Name,
-                //        CategoryName = p.Category.Name,
-                //        p.Price,
-                //        p.Quantity,
-                //        PlanQuantitiesInfo = _db.ProductRecipe
-                //            .Join(_db.Recipes, // Join ProductRecipe with Recipes
-                //                pr => pr.RecipeId, // Use RecipeId from ProductRecipe as the join key
-                //                r => r.Id, // Use Id from Recipe as the join key
-                //                (pr, r) => new { ProductRecipe = pr, Recipe = r })// Project both ProductRecipe and Recipe in the result
-                //            .Where(joined => joined.ProductRecipe.ProductId == p.Id && joined.Recipe.UserId == userId)
-                //            .SelectMany(pr => recipeIdsWithServingsQueryable
-                //                .Where(rs => rs.RecipeId == pr.ProductRecipe.RecipeId)
-                //                .Select(rs => new { rs.Servings, pr.ProductRecipe.Quantity })) // Use the in-memory list
-                //            .ToList(),
-                //        Remains = _db.Inventory
-                //            .Where(i => i.ProductId == p.Id && i.UserId == userId)
-                //            .Sum(i => (i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity))
-                //    })
-                //    .ToList(); // Execute the query and bring the results into memory
-
                 var recipeIds = menuVM.MenuRecipes.Select(mr => mr.RecipeId).ToList(); // Extract only RecipeIds first
 
                 // Fetch necessary base data without trying to filter on the in-memory list
@@ -306,7 +273,8 @@ namespace Komora.Areas.User.Controllers
                             - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
                         Unit = p.Unit,
                         OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
-                            - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
+                            - Math.Max(0, p.Remains))) / p.Quantity) * p.Price),
+                        PlanQuan = p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity),
                     })
                     .Where(p => p.OrderQuan > 0)
                     .ToList();

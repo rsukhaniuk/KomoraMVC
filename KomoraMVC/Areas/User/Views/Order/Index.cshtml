@@ -2,46 +2,60 @@
 
 <h2>Calculated Orders</h2>
 
-<table class="table">
-    <thead>
-
-        <tr>
-            <th>Product ID</th>
-            <th>Product Name</th>
-            <th>Category Name</th>
-            <th>Order Quantity</th>
-            <th>Unit</th>
-            <th>Order Price (₴)</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<form action="@Url.Action("Insert", "Order")" method="post">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@item.ProductId</td>
-                <td>@item.ProductName</td>
-                <td>@item.CategoryName</td>
-                <td>@item.OrderQuan</td>
-                <td>@item.Unit</td>
-                <td>₴@item.OrderPrice.ToString("N2")</td> <!-- Formatting for currency -->
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Category Name</th>
+                <th>Order Quantity</th>
+                <th>Unit</th>
+                <th>Order Price (₴)</th>
             </tr>
-        }
-        
-    </tbody>
-    <tfoot>
-        <tr>
-            <th colspan="5">Total</th>
-            <th>₴@Model.Sum(item => item.OrderPrice).ToString("N2")</th>
-        </tr>
-        <tr>
-            <th colspan="6">
-                <form action="@Url.Action("Insert", "Order")" method="post">
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Model[i].ProductId
+                        <input type="hidden" name="[@i].ProductId" value="@Model[i].ProductId" />
+                    </td>
+                    <td>
+                        @Model[i].ProductName
+                        <input type="hidden" name="[@i].ProductName" value="@Model[i].ProductName" />
+                    </td>
+                    <td>
+                        @Model[i].CategoryName
+                        <input type="hidden" name="[@i].CategoryName" value="@Model[i].CategoryName" />
+                    </td>
+                    <td>
+                        @Model[i].OrderQuan
+                        <input type="hidden" name="[@i].OrderQuan" value="@Model[i].OrderQuan" />
+                    </td>
+                    <td>
+                        @Model[i].Unit
+                        <input type="hidden" name="[@i].Unit" value="@Model[i].Unit" />
+                    </td>
+                    <td>
+                        ₴@Model[i].OrderPrice.ToString("N2")
+                        <input type="hidden" name="[@i].OrderPrice" value="@Model[i].OrderPrice" />
+                    </td>
+                    <input type="hidden" name="[@i].PlanQuan" value="@Model[i].PlanQuan" />
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="5">Total</th>
+                <th>₴@Model.Sum(item => item.OrderPrice).ToString("N2")</th>
+            </tr>
+            <tr>
+                <th colspan="6">
                     <button type="submit" class="btn btn-primary">Add to DB</button>
-                </form>
-            </th>
-
-            
-        </tr>
-    </tfoot>
-
-</table>
+                </th>
+            </tr>
+        </tfoot>
+    </table>
+</form>

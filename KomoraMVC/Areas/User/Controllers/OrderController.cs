@@ -23,7 +23,8 @@ namespace Komora.Areas.User.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _db;
-        private List<OrderVM> calculatedOrder;
+        [BindProperty]
+        public List<OrderVM> calculatedOrder { get; set; }
 
         /// <summary>
         /// Constructor that initializes the unitOfWork
@@ -93,30 +94,66 @@ namespace Komora.Areas.User.Controllers
         public IActionResult Index(string orders)
         {
             List<OrderVM> orderList = JsonConvert.DeserializeObject<List<OrderVM>>(HttpUtility.UrlDecode(orders));
-
+            calculatedOrder = orderList;
             return View(orderList);
         }
 
         [HttpPost]
-        public IActionResult Insert()
+        public IActionResult Insert(List<OrderVM> orders)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var orders = CalculateOrders(1.2);
             foreach (var item in orders)
             {
                 InventoryItem inventoryItem = new InventoryItem();
                 inventoryItem.UserId = userId;
                 inventoryItem.ProductId = item.ProductId;
-                inventoryItem.RemainQuantity = item.OrderQuan;
+                inventoryItem.IncomeQuantity += item.OrderQuan;
                 inventoryItem.IncomeDate = DateTime.Now;
+                //inventoryItem.PlanQuantity += item.PlanQuan;
+                //inventoryItem.PlanDate = DateTime.Now;
+                //inventoryItem.RemainQuantity = item.OrderQua
                 _unitOfWork.Inventory.Add(inventoryItem);
+            }
+            _unitOfWork.Save();
+
+            foreach (var item in orders)
+            {
+                var inventoryItems = _unitOfWork.Inventory
+                    .GetAll(i => i.ProductId == item.ProductId)
+                    .OrderBy(i => i.ExpirationDate == DateTime.MinValue ? 1 : 0)  // Prioritize records without DateTime.MinValue
+                    .ThenBy(i => i.ExpirationDate)  // Then sort by date where not MinValue
+                    .ToList();
+
+                var totalPlanToAdd = item.PlanQuan;
+                foreach (var inventoryItem in inventoryItems)
+                {
+                    if (totalPlanToAdd <= 0) break;
+
+                    var possibleToAdd = inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity;
+                    if (possibleToAdd > 0)
+                    {
+                        var toAdd = Math.Min(possibleToAdd, totalPlanToAdd);
+                        inventoryItem.PlanQuantity += toAdd;
+                        inventoryItem.PlanDate = DateTime.Now;
+                        inventoryItem.RemainQuantity = inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity;
+                        inventoryItem.Remaindate = DateTime.Now;
+                        totalPlanToAdd -= toAdd;
+                    }
+                    _unitOfWork.Inventory.Update(inventoryItem);
+                }
+
+                //// Обробка випадків, коли не всю кількість можна розподілити
+                //if (totalPlanToAdd > 0)
+                //{
+                //    // Log error or handle case
+                //}
             }
 
             _unitOfWork.Save();
             TempData["success"] = "Products added successfully.";
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
         }
 
     }
