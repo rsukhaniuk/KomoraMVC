@@ -200,7 +200,8 @@ namespace Komora.Areas.User.Controllers
                 {
                     OrderList = orders,
                     Menu = obj.Menu,
-                    MenuRecipes = obj.MenuRecipes
+                    MenuRecipes = obj.MenuRecipes,
+                    Status = obj.Status
                 };
                 return Json(new { success = false, message = "Insufficient resources to create the menu.", shoppingListVM = shoppingListVM});
             }

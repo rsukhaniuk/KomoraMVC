@@ -17,8 +17,6 @@ function loadDataTable() {
             { data: 'incomeQuantity', "width": "5%" },
             { data: 'remaindate', "width": "5%" },
             { data: 'remainQuantity', "width": "5%" },
-            { data: 'wasteDate', "width": "5%" },
-            { data: 'wasteQuantity', "width": "5%" },
             {
                 data: 'id',
                 "render": function (data) {

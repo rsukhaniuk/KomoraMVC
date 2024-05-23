@@ -14,5 +14,13 @@ namespace Komora.Models.ViewModels
         public Menu Menu { get; set; }
         public List<MenuRecipe> MenuRecipes { get; set; }
 
+        // Other properties
+        public bool StatusForDisplay
+        {
+            get => Status ?? true; // Default to false or true depending on your logic
+            set => Status = value;
+        }
+
+        public bool? Status { get; set; }
     }
 }

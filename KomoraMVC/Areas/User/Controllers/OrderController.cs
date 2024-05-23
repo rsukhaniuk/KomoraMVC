@@ -104,6 +104,8 @@ namespace Komora.Areas.User.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            shoppingListVM.Menu.Status = shoppingListVM.StatusForDisplay;
+
             foreach (var item in shoppingListVM.OrderList)
             {
                 InventoryItem inventoryItem = new InventoryItem();
@@ -137,7 +139,7 @@ namespace Komora.Areas.User.Controllers
                         var toAdd = Math.Min(possibleToAdd, totalPlanToAdd);
                         inventoryItem.PlanQuantity += toAdd;
                         inventoryItem.PlanDate = DateTime.Now;
-                        inventoryItem.RemainQuantity = inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity;
+                        inventoryItem.RemainQuantity = Math.Round(inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity, 3, MidpointRounding.AwayFromZero);
                         inventoryItem.Remaindate = DateTime.Now;
                         totalPlanToAdd -= toAdd;
                     }
