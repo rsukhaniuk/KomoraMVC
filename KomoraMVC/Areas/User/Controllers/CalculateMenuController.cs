@@ -31,7 +31,7 @@ namespace Komora.Areas.User.Controllers
             this._db = db;
         }
 
-        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, double budget, int servingsPerMeal)
+        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal)
         {
             var plannedMenus = new List<CalculateMenuVM>();
             double totalCost = 0;
@@ -178,19 +178,64 @@ namespace Komora.Areas.User.Controllers
             return plannedMenus;
         }
 
-
-
+        [HttpGet]
         public IActionResult Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // Initialize with default values to ensure the form is clear on first access or provide reasonable defaults.
+            var viewModel = new MenuPlanningViewModel
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(2),
+                ServingsPerMeal = 1,
+                CalculatedMenus = new List<CalculateMenuVM>(), // Initially empty
+                
+        };
 
-            var menus = PlanMenus(DateTime.Now, DateTime.Now.AddDays(2), userId, 4000, 3);
+            // Fetch the recipes
+            var recipes = _db.Recipes.ToList();  // Ensure the query is executed with ToList if necessary
 
+            // Build the dictionary manually
+            foreach (var recipe in recipes)
+            {
+                if (!viewModel.RecipeNames.ContainsKey(recipe.Id))  // Check to avoid key conflicts
+                {
+                    viewModel.RecipeNames.Add(recipe.Id, recipe.Name);
+                }
+            }
 
-
-            return RedirectToAction("Index", "Home");
+            return View(viewModel);
         }
+
+        [HttpPost]
+        public IActionResult Index(MenuPlanningViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal);
+                model.RecipeNames = _db.Recipes
+                               .Select(r => new { r.Id, r.Name })  // Select only necessary fields
+                               .ToDictionary(r => r.Id, r => r.Name);  // Convert to dictionary
+
+                return View(model); // Return to the Index view with the calculated data
+            }
+
+            return View(model); // Return the model to display any validation errors
+        }
+
+        //public IActionResult Index()
+        //{
+        //    var claimsIdentity = (ClaimsIdentity)User.Identity;
+        //    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+        //    var menus = PlanMenus(DateTime.Now, DateTime.Now.AddDays(2), userId, 3);
+
+
+
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         //[HttpPost]
         //public IActionResult Insert()

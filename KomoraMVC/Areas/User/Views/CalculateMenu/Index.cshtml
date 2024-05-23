@@ -1,0 +1,64 @@
+﻿@model MenuPlanningViewModel
+
+@{
+    ViewData["Title"] = "Plan Menus";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Index" method="post" enctype="multipart/form-data">
+    <div class="border p-3 mt-4">
+        <div class="form-group mb-3">
+            <label asp-for="StartDate" class="control-label">Start Date:</label>
+            <input asp-for="StartDate" type="date" class="form-control" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="EndDate" class="control-label">End Date:</label>
+            <input asp-for="EndDate" type="date" class="form-control" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="ServingsPerMeal" class="control-label">Servings Per Meal:</label>
+            <input asp-for="ServingsPerMeal" type="number" class="form-control" />
+            <span asp-validation-for="ServingsPerMeal" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary form-control" style="height:50px">Calculate Menu</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (Model.CalculatedMenus.Any())
+{
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3>Calculated Menus</h3>
+            <div>
+                @foreach (var menu in Model.CalculatedMenus)
+                {
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h5 class="card-title">Menu for @((menu.Menu.Date.HasValue ? menu.Menu.Date.Value.ToShortDateString() : "Date not set"))</h5>
+                            <ul>
+                                @foreach (var recipe in menu.MenuRecipes)
+                                {
+                                    <li>@Model.RecipeNames[recipe.RecipeId] - Servings: @recipe.Servings</li>
+                                }
+                            </ul>
+                            @* <p>Total Cost: @menu.TotalCost hidden </p>
+                            <p>Can Prepare: @(menu.CanPrepare ? "Yes" : "No") hidden </p> *@
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
