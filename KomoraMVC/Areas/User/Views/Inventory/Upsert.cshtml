@@ -32,7 +32,7 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="InventoryItem.PlanQuantity" class="control-label pb-1"></label>
-                    <input asp-for="InventoryItem.PlanQuantity" class="form-control" />
+                    <input asp-for="InventoryItem.PlanQuantity" class="form-control" id="planQuantity" />
                     <span asp-validation-for="InventoryItem.PlanQuantity" class="text-danger"></span>
                 </div>
 
@@ -44,7 +44,7 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="InventoryItem.IncomeQuantity" class="control-label pb-1"></label>
-                    <input asp-for="InventoryItem.IncomeQuantity" class="form-control" />
+                    <input asp-for="InventoryItem.IncomeQuantity" class="form-control" id="incomeQuantity" />
                     <span asp-validation-for="InventoryItem.IncomeQuantity" class="text-danger"></span>
                 </div>
 
@@ -56,7 +56,7 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="InventoryItem.RemainQuantity" class="control-label pb-1"></label>
-                    <input asp-for="InventoryItem.RemainQuantity" class="form-control" />
+                    <input asp-for="InventoryItem.RemainQuantity" class="form-control" id="remainQuantity" readonly />
                     <span asp-validation-for="InventoryItem.RemainQuantity" class="text-danger"></span>
                 </div>
 
@@ -106,4 +106,21 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
+    <script>
+        $(document).ready(function () {
+            // Function to calculate remaining quantity
+            function calculateRemaining() {
+                var income = parseFloat($('#incomeQuantity').val()) || 0;
+                var plan = parseFloat($('#planQuantity').val()) || 0;
+                var remaining = income - plan;
+                $('#remainQuantity').val(remaining.toFixed(2)); // Adjust decimal as needed
+            }
+
+            // Bind the calculateRemaining function to the change events
+            $('#incomeQuantity, #planQuantity').change(calculateRemaining);
+
+            // Initial calculation on page load
+            calculateRemaining();
+        });
+    </script>
 }

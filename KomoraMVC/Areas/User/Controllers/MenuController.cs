@@ -132,10 +132,38 @@ namespace Komora.Areas.User.Controllers
 
             var calcOrders = CalculateOrders(obj, 1.0); // tolerance
 
-           
+
 
             if (calcOrders.Count == 0)
             {
+                var calcOrderQuan = CalculatePlanQuan(obj, 1.0);
+                foreach (var item in calcOrderQuan)
+                {
+                    var inventoryItems = _unitOfWork.Inventory
+                        .GetAll(i => i.ProductId == item.ProductId)
+                        .OrderBy(i => i.ExpirationDate == DateTime.MinValue ? 1 : 0)  // Prioritize records without DateTime.MinValue
+                        .ThenBy(i => i.ExpirationDate)  // Then sort by date where not MinValue
+                        .ToList();
+
+                    var totalPlanToAdd = item.PlanQuan;
+                    foreach (var inventoryItem in inventoryItems)
+                    {
+                        if (totalPlanToAdd <= 0) break;
+
+                        var possibleToAdd = inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity;
+                        if (possibleToAdd > 0)
+                        {
+                            var toAdd = Math.Min(possibleToAdd, totalPlanToAdd);
+                            inventoryItem.PlanQuantity += toAdd;
+                            inventoryItem.PlanDate = DateTime.Now;
+                            inventoryItem.RemainQuantity = Math.Round(inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity, 3, MidpointRounding.AwayFromZero);
+                            inventoryItem.Remaindate = DateTime.Now;
+                            totalPlanToAdd -= toAdd;
+                        }
+                        _unitOfWork.Inventory.Update(inventoryItem);
+                    }
+
+                }
 
                 if (obj.Menu.Id == 0)
                 {
@@ -188,7 +216,7 @@ namespace Komora.Areas.User.Controllers
                     {
                         _unitOfWork.Save();
                         TempData["success"] = "Menu added successfully.";
-                        return RedirectToAction("Index"); // Переходимо до списку рецептів, якщо все в порядку
+                        return Json(new { success = true, message = "Menu saved successfully. There are enough products" });
                     }
                 }
                 return RedirectToAction("Index");
@@ -203,13 +231,10 @@ namespace Komora.Areas.User.Controllers
                     MenuRecipes = obj.MenuRecipes,
                     Status = obj.Status
                 };
-                return Json(new { success = false, message = "Insufficient resources to create the menu.", shoppingListVM = shoppingListVM});
+                return Json(new { success = false, message = "Insufficient resources to create the menu.", shoppingListVM = shoppingListVM });
             }
-
-            
-
-
         }
+
 
         public List<OrderVM> CalculateOrders(MenuVM menuVM, double tolerance)
         {
@@ -295,6 +320,82 @@ namespace Komora.Areas.User.Controllers
             }
         }
 
+        public List<OrderVM> CalculatePlanQuan(MenuVM menuVM, double tolerance)
+        {
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var today = DateTime.Today; // Define the date limit for filtering menus.
+            var isMenuActive = menuVM.Menu.Status == true; // Check the status of the menu
+            var menuDate = menuVM.Menu.Date; // Get the date from the Menu object
+
+            if (menuDate >= today && isMenuActive)
+            {
+
+                var recipeIds = menuVM.MenuRecipes.Select(mr => mr.RecipeId).ToList(); // Extract only RecipeIds first
+
+                // Fetch necessary base data without trying to filter on the in-memory list
+                var productData = _db.Products
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        CategoryName = p.Category.Name,
+                        p.Price,
+                        p.Quantity,
+                        Unit = p.Unit.Name,
+                        ProductRecipes = _db.ProductRecipe
+                            .Where(pr => pr.ProductId == p.Id && recipeIds.Contains(pr.RecipeId)) // Only take ProductRecipes that match the RecipeIds
+                            .Join(_db.Recipes,
+                                pr => pr.RecipeId,
+                                r => r.Id,
+                                (pr, r) => new { ProductRecipe = pr, Recipe = r }) // Join here is fine as it involves only DB sets
+                            .ToList(),
+                        Remains = _db.Inventory
+                            .Where(i => i.ProductId == p.Id && i.UserId == userId)
+                            .Sum(i => i.IncomeQuantity - i.PlanQuantity - i.WasteQuantity)
+                    })
+                    .ToList(); // Execute the DB query and retrieve the results
+
+                // Now apply any in-memory operations
+                var finalData = productData.Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.CategoryName,
+                    p.Price,
+                    p.Quantity,
+                    p.Unit,
+                    PlanQuantitiesInfo = p.ProductRecipes
+                        .SelectMany(pr => menuVM.MenuRecipes
+                            .Where(mr => mr.RecipeId == pr.ProductRecipe.RecipeId)
+                            .Select(mr => new { mr.Servings, pr.ProductRecipe.Quantity }))
+                        .ToList(),
+                    p.Remains
+                }).ToList();
+
+
+
+                // Process the calculations in memory
+                var orders = finalData
+                    .Select(p => new OrderVM
+                    {
+                        ProductId = p.Id,
+                        ProductName = p.Name,
+                        PlanQuan = p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity),
+                    })
+                    .ToList();
+
+
+
+                return orders;
+            }
+            else
+            {
+                return new List<OrderVM>();
+            }
+        }
 
 
 

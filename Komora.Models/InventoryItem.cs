@@ -46,6 +46,7 @@ namespace Komora.Models
         public DateTime Remaindate { get; set; }
 
         [AllowNull]
+        [Range(0, double.MaxValue, ErrorMessage = "Remaining Quantity cannot be negative.")]
         public double RemainQuantity { get; set; }
 
         [AllowNull]
