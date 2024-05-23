@@ -16,8 +16,8 @@ namespace Komora.Models
         [Key]
         public int Id { get; set; }
 
-        
 
+        //[Required]
         public Nullable<System.DateTime> Date { get; set; }
 
         public Nullable<bool> Status { get; set; }

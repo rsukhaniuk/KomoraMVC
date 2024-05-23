@@ -6,8 +6,11 @@ using Komora.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Security.Claims;
+using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace Komora.Areas.User.Controllers
 {
@@ -84,14 +87,14 @@ namespace Komora.Areas.User.Controllers
                 })
                 .Where(p => p.OrderQuan > 0)
                 .ToList();
-
             return orders;
-
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string orders)
         {
-            return View(CalculateOrders(1.2));
+            List<OrderVM> orderList = JsonConvert.DeserializeObject<List<OrderVM>>(HttpUtility.UrlDecode(orders));
+
+            return View(orderList);
         }
 
         [HttpPost]

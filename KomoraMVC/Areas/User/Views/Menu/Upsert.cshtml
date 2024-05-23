@@ -89,41 +89,49 @@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         $(document).ready(function () {
-            $('#menuForm').submit(function (e) {
+            $('form').submit(function (e) {
                 e.preventDefault();
                 var formData = new FormData(this);
                 $.ajax({
-                    url: '@Url.Action("Upsert", "Menu")', // Ensure the URL is correct
-                    method: 'POST',
+                    url: $(this).attr('action'),
+                    type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function (response) {
                         if (response.success) {
-                            toastr.success(response.message);
-                            setTimeout(function () {
-                                window.location.href = '@Url.Action("Index", "Menu")'; // Redirect after notification
-                            }, 3000);
+                            Swal.fire({
+                                title: 'Success',
+                                text: response.message,
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.href = '@Url.Action("Index", "Menu")'; // Redirect to menu index
+                            });
                         } else {
-                            toastr.error(response.message);
-                            if (response.shoppingList && response.shoppingList.length > 0) {
-                                // Optionally open a new window with shopping list details
-                                var shoppingWindow = window.open("", "_blank");
-                                var html = "<h1>Shopping List</h1><ul>";
-                                response.shoppingList.forEach(function (item) {
-                                    html += "<li>" + item + "</li>";
-                                });
-                                html += "</ul>";
-                                shoppingWindow.document.write(html);
-                            }
+                            Swal.fire({
+                                title: 'Insufficient Resources',
+                                text: response.message,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Make Shopping List',
+                                cancelButtonText: 'Cancel'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Prepare the base URL
+                                    var baseUrl = '@Url.Action("Index", "Order")';
+                                    // Serialize the orders data and append it as a query parameter
+                                    var ordersData = encodeURIComponent(JSON.stringify(response.orders));
+                                    // Redirect to the Order Index with orders data
+                                    window.location.href = baseUrl + '?orders=' + ordersData;
+                                }
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
-                        toastr.error("Error: " + error);
+                        Swal.fire('Error', 'An error occurred while processing your request: ' + error, 'error');
                     }
                 });
             });

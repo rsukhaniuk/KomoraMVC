@@ -14,6 +14,7 @@ namespace Komora.Models.ViewModels
         public string ProductName { get; set; }
         public string CategoryName { get; set; }
         public double OrderQuan { get; set; }
+        public string Unit { get; set; }
         public double OrderPrice { get; set; }
     }
 }

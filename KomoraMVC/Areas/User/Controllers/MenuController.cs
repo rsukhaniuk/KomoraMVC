@@ -197,7 +197,7 @@ namespace Komora.Areas.User.Controllers
             }
             else
             {
-                return Json(new { data = orders });
+                return Json(new { success = false, message = "Insufficient resources to create the menu.", orders = orders });
             }
 
             
@@ -262,6 +262,7 @@ namespace Komora.Areas.User.Controllers
                         CategoryName = p.Category.Name,
                         p.Price,
                         p.Quantity,
+                        Unit = p.Unit.Name,
                         ProductRecipes = _db.ProductRecipe
                             .Where(pr => pr.ProductId == p.Id && recipeIds.Contains(pr.RecipeId)) // Only take ProductRecipes that match the RecipeIds
                             .Join(_db.Recipes,
@@ -283,6 +284,7 @@ namespace Komora.Areas.User.Controllers
                     p.CategoryName,
                     p.Price,
                     p.Quantity,
+                    p.Unit,
                     PlanQuantitiesInfo = p.ProductRecipes
                         .SelectMany(pr => menuVM.MenuRecipes
                             .Where(mr => mr.RecipeId == pr.ProductRecipe.RecipeId)
@@ -290,6 +292,7 @@ namespace Komora.Areas.User.Controllers
                         .ToList(),
                     p.Remains
                 }).ToList();
+
 
 
                 // Process the calculations in memory
@@ -301,6 +304,7 @@ namespace Komora.Areas.User.Controllers
                         CategoryName = p.CategoryName,
                         OrderQuan = Math.Round(Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
                             - Math.Max(0, p.Remains))) / p.Quantity) * p.Quantity, 3, MidpointRounding.AwayFromZero),
+                        Unit = p.Unit,
                         OrderPrice = (Math.Ceiling((Math.Max(0, p.PlanQuantitiesInfo.Sum(x => x.Servings * x.Quantity * tolerance)
                             - Math.Max(0, p.Remains))) / p.Quantity) * p.Price)
                     })
