@@ -130,6 +130,8 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             obj.Menu.UserId = userId;
 
+  
+
             var calcOrders = CalculateOrders(obj, 1.0); // tolerance
 
 
@@ -405,6 +407,9 @@ namespace Komora.Areas.User.Controllers
         {
             var menuRecipeToBeDeleted = _unitOfWork.MenuRecipe.Get(u => u.Id == id);
 
+
+
+
             if (menuRecipeToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
@@ -427,6 +432,42 @@ namespace Komora.Areas.User.Controllers
         public IActionResult Delete(int? id)
         {
             var menuToBeDeleted = _unitOfWork.Menu.Get(u => u.Id == id);
+            var menuRecipesToBeDeleted = _unitOfWork.MenuRecipe.GetAll(u => u.MenuId == id).ToList();
+
+            MenuVM menuVMToBeDeleted = new MenuVM
+            {
+                Menu = menuToBeDeleted,
+                MenuRecipes = menuRecipesToBeDeleted
+            };
+
+            var calcOrderQuan = CalculatePlanQuan(menuVMToBeDeleted, 1.0);
+            foreach (var item in calcOrderQuan)
+            {
+                var inventoryItems = _unitOfWork.Inventory
+                    .GetAll(i => i.ProductId == item.ProductId)
+                    .OrderBy(i => i.ExpirationDate == DateTime.MinValue ? 1 : 0)  // Prioritize records without DateTime.MinValue
+                    .ThenBy(i => i.ExpirationDate)  // Then sort by date where not MinValue
+                    .ToList();
+
+                var totalPlanToAdd = item.PlanQuan;
+                foreach (var inventoryItem in inventoryItems)
+                {
+                    if (totalPlanToAdd <= 0) break;
+
+                    var possibleToDelete =  inventoryItem.PlanQuantity;
+                    {
+                        var toAdd = Math.Min(possibleToDelete, totalPlanToAdd);
+                        inventoryItem.PlanQuantity = Math.Round(inventoryItem.PlanQuantity - toAdd, 3, MidpointRounding.AwayFromZero);
+                        inventoryItem.PlanDate = DateTime.Now;
+                        inventoryItem.RemainQuantity = Math.Round(inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity, 3, MidpointRounding.AwayFromZero);
+                        inventoryItem.Remaindate = DateTime.Now;
+                        totalPlanToAdd -= toAdd;
+                    }
+                    _unitOfWork.Inventory.Update(inventoryItem);
+                }
+
+            }
+
             if (menuToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });
