@@ -36,7 +36,7 @@
 {
     <div class="border p-3 mt-4">
         <h3>Calculated Menus</h3>
-        <form asp-controller="CalculateMenu" asp-action="Insert" method="post">
+        <form asp-controller="CalculateMenu" asp-action="Insert" method="post" id="form-planmenu">
             @for (int i = 0; i < Model.CalculatedMenus.Count; i++)
             {
                 <div class="card mt-2">
@@ -98,4 +98,39 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        $(document).on('submit', '#form-planmenu', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.message,
+                        icon: 'success'
+                    }).then((result) => {
+                        window.location.href = '@Url.Action("Index", "Menu")';
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: response.message,
+                    icon: 'error'
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            Swal.fire('Error', 'An error occurred: ' + (xhr.responseText || error), 'error');
+        }
+    });
+});
+    </script>
 }

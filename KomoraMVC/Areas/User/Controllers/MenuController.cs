@@ -156,7 +156,7 @@ namespace Komora.Areas.User.Controllers
                         if (possibleToAdd > 0)
                         {
                             var toAdd = Math.Min(possibleToAdd, totalPlanToAdd);
-                            inventoryItem.PlanQuantity += toAdd;
+                            inventoryItem.PlanQuantity = Math.Round(inventoryItem.PlanQuantity + toAdd, 3, MidpointRounding.AwayFromZero);
                             inventoryItem.PlanDate = DateTime.Now;
                             inventoryItem.RemainQuantity = Math.Round(inventoryItem.IncomeQuantity - inventoryItem.PlanQuantity, 3, MidpointRounding.AwayFromZero);
                             inventoryItem.Remaindate = DateTime.Now;

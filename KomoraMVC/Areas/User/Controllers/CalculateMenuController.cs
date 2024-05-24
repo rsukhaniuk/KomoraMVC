@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Komora.Areas.User.Controllers
@@ -239,6 +240,44 @@ namespace Komora.Areas.User.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            // Fetch all meal types once at the beginning
+            var allMeals = _unitOfWork.Meal.GetAll(m => m.UserId == userId).ToList();
+            var allMealIds = new HashSet<int>(allMeals.Select(m => m.Id)); // Store all meal IDs for quick lookup
+
+            // Prepare a map of RecipeIds to MealIds
+            var recipeToMealMap = _unitOfWork.Recipe.GetAll()
+                                    .Where(r => r.MealId != null)
+                                    .ToDictionary(r => r.Id, r => r.MealId);
+
+            StringBuilder errorMessages = new StringBuilder();
+
+            foreach (var menuVM in model.CalculatedMenus)
+            {
+                // Use the map to get MealIds from RecipeIds in MenuRecipes
+                var providedMealIds = new HashSet<int>(
+                    menuVM.MenuRecipes
+                    .Where(mr => recipeToMealMap.ContainsKey(mr.RecipeId))
+                    .Select(mr => recipeToMealMap[mr.RecipeId])
+                );
+
+                var missingMealIds = allMealIds.Except(providedMealIds).ToList(); // Get missing meal IDs
+
+                if (missingMealIds.Any())
+                {
+                    var missingMealNames = _unitOfWork.Meal.GetAll(m => missingMealIds.Contains(m.Id))
+                                               .Select(m => m.Name)
+                                               .ToList(); // Fetch the names of missing meals
+                    string menuDate = menuVM.Menu.Date.HasValue ? menuVM.Menu.Date.Value.ToString("yyyy-MM-dd") : "Date not set";
+                    errorMessages.AppendLine($"Menu for {menuDate} is missing recipes for: {String.Join(", ", missingMealNames)}.");
+                    errorMessages.Append("\n");
+                }
+            }
+
+            if (errorMessages.Length > 0)
+            {
+                return Json(new { success = false, message = errorMessages.ToString() });
+            }
+
 
 
             foreach (var menuVM in model.CalculatedMenus)
@@ -335,7 +374,7 @@ namespace Komora.Areas.User.Controllers
             }
             TempData["success"] = "Menu added successfully.";
 
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Menu added successfully." });
         }
 
 
