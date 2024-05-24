@@ -1,0 +1,49 @@
+﻿@model RecipeVM
+
+<form method="post">
+    <div class="card border-3 mt-4 mb-4">
+        <div class="card-header bg-white text-center">
+            <h2 class="text-dark text-uppercase">@Model.Recipe.Name</h2>
+            <h4 class="text-muted">@Model.Recipe.Meal.Name</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <img src="@Model.Recipe.imgUrl" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;" alt="Recipe Image" />
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="text-dark">Preparation Details:</h5>
+                            <p>@Model.Recipe.Preparation</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-dark">Cooking Time:</h5>
+                            <p>@Model.Recipe.CookingTime</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-dark">Is Vegetarian:</h5>
+                            <p>@(Model.Recipe.IsVegetarian ? "Yes" : "No")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-dark">Calories:</h5>
+                            <p>@Model.Recipe.Calories</p>
+                        </div>
+                    </div>
+                    <h5 class="text-dark">Ingredients:</h5>
+                    <ul>
+                        @foreach (var ingredient in Model.ProductRecipes)
+                        {
+                            <li>@ingredient.Product.Name - @ingredient.Quantity @ingredient.Unit.Name</li>
+                        }
+                    </ul>
+                    <div class="mt-3">
+                        <a asp-action="Index" class="btn btn-outline-primary bg-gradient mb-1 fw-semibold text-uppercase">
+                            <small>Back to Home</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
