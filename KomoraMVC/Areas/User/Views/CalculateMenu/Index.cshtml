@@ -23,7 +23,15 @@
             <input asp-for="ServingsPerMeal" type="number" class="form-control" />
             <span asp-validation-for="ServingsPerMeal" class="text-danger"></span>
         </div>
-
+        <div class="form-group mb-3">
+            <label asp-for="TotalCalories" class="control-label">Total Calories:</label>
+            <input asp-for="TotalCalories" type="number" class="form-control" />
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="IsVegan" class="control-label">Is the Menu Vegan?</label>
+            <input asp-for="IsVegan" type="checkbox" class="form-check-input" />
+            <span asp-validation-for="IsVegan" class="text-danger"></span>
+        </div>
         <div class="col-md-2">
             <!-- Adjust the column size as needed -->
             <button type="submit" class="btn btn-primary form-control" style="height:50px;">Calculate Menu</button>

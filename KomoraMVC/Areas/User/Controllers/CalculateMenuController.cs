@@ -189,7 +189,8 @@ namespace Komora.Areas.User.Controllers
                 EndDate = DateTime.Today.AddDays(2),
                 ServingsPerMeal = 1,
                 CalculatedMenus = new List<CalculateMenuVM>(), // Initially empty
-                
+                TotalCalories = 0,
+                IsVegan = false,
         };
 
             // Fetch the recipes
