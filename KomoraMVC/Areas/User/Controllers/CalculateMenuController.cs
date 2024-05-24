@@ -6,6 +6,7 @@ using Komora.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -32,10 +33,13 @@ namespace Komora.Areas.User.Controllers
             this._db = db;
         }
 
-        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal)
+        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal, int TotalCalories, bool IsVeg)
         {
             var plannedMenus = new List<CalculateMenuVM>();
             double totalCost = 0;
+            int totalDays = (endDate - startDate).Days + 1;
+            int dailyCalorieLimit = TotalCalories / totalDays;  // Daily calorie limit per person
+
 
             // Pre-load necessary data
             var meals = _db.Meals.Where(m => m.UserId == userId).ToList();
@@ -67,21 +71,22 @@ namespace Komora.Areas.User.Controllers
                 var dailyMenu = new Menu { Date = day, UserId = userId, Status = true };
                 var dailyMenuRecipes = new List<MenuRecipe>();
                 bool canPrepareAll = true;
+                int dailyCaloriesConsumed = 0;
 
                 foreach (var meal in meals)
                 {
                     var mealRecipes = recipes.Where(r => r.MealId == meal.Id).ToList();
                     bool canPrepare = true;
-                    double dailyRecipeCost = 0;
                     Dictionary<Recipe, List<ProductRecipe>> suitableRecipes = new Dictionary<Recipe, List<ProductRecipe>>();
 
                     //Recipe newRecipe = new Recipe();
                     //var newIngredients = new List<ProductRecipe>();
                     foreach (var recipe in mealRecipes)
                     {
-
+                        bool recipeIsVegan = recipe.IsVegetarian;
                         canPrepare = true;
-                        dailyRecipeCost = 0;
+                        double dailyRecipeCost = 0;
+                        int recipeCalories = (int)recipe.Calories;
                         var ingredients = productRecipes.Where(pr => pr.RecipeId == recipe.Id).ToList();
 
                         foreach (var ingredient in ingredients)
@@ -95,17 +100,12 @@ namespace Komora.Areas.User.Controllers
                             }
                             else
                             {
-                                // Calculate cost using pre-loaded price map
                                 dailyRecipeCost += requiredQuantity * productPriceMap[ingredient.ProductId];
-                                //inventoryItem.RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
-
                             }
                         }
-                        if (canPrepare)
+                        if (canPrepare && dailyCaloriesConsumed + recipeCalories <= dailyCalorieLimit && ((IsVeg && recipeIsVegan) || !IsVeg))
                         {
                             suitableRecipes.Add(recipe, productRecipes.Where(pr => pr.RecipeId == recipe.Id).ToList());
-                            //newRecipe = recipe;
-                            //newIngredients = productRecipes.Where(pr => pr.RecipeId == newRecipe.Id).ToList();
                         }
                         
                     }
@@ -124,6 +124,7 @@ namespace Komora.Areas.User.Controllers
                                 if (!previousMenu.MenuRecipes.Any(mr => mr.RecipeId == currRecipe.Id) || suitableRecipes.Count == 1)
                                 {
                                     dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = currRecipe.Id, Servings = servingsPerMeal });
+                                    dailyCaloriesConsumed += (int)currRecipe.Calories;
                                     // Calculate the required quantity of each ingredient and update virtual inventory
                                     foreach (var ingredient in currIngredients)
                                     {
@@ -149,22 +150,7 @@ namespace Komora.Areas.User.Controllers
                                 virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
                             }
                         }
-
                         
-
-                        //var previousMenu = plannedMenus.FirstOrDefault(menu => menu.Menu.Date == day.AddDays(-1));
-                        //if (previousMenu != null)
-                        //{
-                        //    var prevDailyMenuRecipes = previousMenu.MenuRecipes;
-                        //}
-                        //if (suitableRecipes.Count == 1)
-                        //    dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = suitableRecipes.Id, Servings = servingsPerMeal });
-
-                        //foreach (var ingredient in newIngredients)
-                        //{
-                        //    var requiredQuantity = ingredient.Quantity * servingsPerMeal;
-                        //    virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Add back to virtual inventory
-                        //}
                     }
                 }
 
@@ -216,7 +202,7 @@ namespace Komora.Areas.User.Controllers
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal);
+                model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal, (int)model.TotalCalories, model.IsVegan);
                 //model.RecipeNames = _db.Recipes
                 //               .Select(r => new { r.Id, r.Name })  // Select only necessary fields
                 //               .ToDictionary(r => r.Id, r => r.Name);  // Convert to dictionary
