@@ -24,7 +24,7 @@
             <span asp-validation-for="ServingsPerMeal" class="text-danger"></span>
         </div>
         <div class="form-group mb-3">
-            <label asp-for="TotalCalories" class="control-label">Total Calories:</label>
+            <label asp-for="TotalCalories" class="control-label">Total Calories for period per serving:</label>
             <input asp-for="TotalCalories" type="number" class="form-control" />
         </div>
         <div class="form-group mb-3">
@@ -59,12 +59,17 @@
                                 <input type="hidden" asp-for="@Model.CalculatedMenus[i].Menu.Date" />
                             }
                         </ul>
+                        <div>
+                            Total calories for menu - @Model.CalculatedMenus[i].TotalCaloriesMenu
+                        </div>
+
                     </div>
                 </div>
             }
+
             <input type="hidden" asp-for="@Model.StartDate" />
             <input type="hidden" asp-for="@Model.EndDate" />
-            <div class="col-md-2">
+            <div class="col-md-2 p-2">
                 <button type="submit" class="btn btn-success form-control" style="height: 50px; width: auto;">Add Menus</button>
             </div>
 

@@ -15,6 +15,8 @@ namespace Komora.Models.ViewModels
         public double TotalCost { get; set; }
         public bool CanPrepare { get; set; }
 
+        public int TotalCaloriesMenu { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int ServingsPerMeal { get; set; }

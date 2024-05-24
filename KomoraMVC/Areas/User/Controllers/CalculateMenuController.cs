@@ -142,7 +142,7 @@ namespace Komora.Areas.User.Controllers
                             var ingredients = suitableRecipes.First().Value;
 
                             dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = recipe.Id, Servings = servingsPerMeal });
-
+                            dailyCaloriesConsumed += (int)recipe.Calories;
                             // Calculate the required quantity of each ingredient and update virtual inventory
                             foreach (var ingredient in ingredients)
                             {
@@ -156,7 +156,7 @@ namespace Komora.Areas.User.Controllers
 
                 if (dailyMenuRecipes.Count > 0)
                 {
-                    plannedMenus.Add(new CalculateMenuVM { Menu = dailyMenu, MenuRecipes = dailyMenuRecipes, TotalCost = totalCost, CanPrepare = canPrepareAll });
+                    plannedMenus.Add(new CalculateMenuVM { Menu = dailyMenu, MenuRecipes = dailyMenuRecipes, TotalCost = totalCost, CanPrepare = canPrepareAll, TotalCaloriesMenu = dailyCaloriesConsumed });
                 }
 
                   // Stop if budget exceeded
