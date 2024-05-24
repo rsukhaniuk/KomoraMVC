@@ -16,6 +16,6 @@ namespace Komora.Models.ViewModels
         // List to hold calculated menus
         public List<CalculateMenuVM> CalculatedMenus { get; set; } = new List<CalculateMenuVM>();
 
-        public Dictionary<int, string> RecipeNames { get; set; } = new Dictionary<int, string>();
+        public Dictionary<int, (string MealName, string RecipeName)> RecipeNames { get; set; } = new Dictionary<int, (string, string)>();
     }
 }

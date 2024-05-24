@@ -199,7 +199,7 @@ namespace Komora.Areas.User.Controllers
             {
                 if (!viewModel.RecipeNames.ContainsKey(recipe.Id))  // Check to avoid key conflicts
                 {
-                    viewModel.RecipeNames.Add(recipe.Id, recipe.Name);
+                    viewModel.RecipeNames.Add(recipe.Id, (_unitOfWork.Meal.Get(u => u.Id == recipe.MealId).Name, recipe.Name ));
                 }
             }
 
@@ -215,9 +215,17 @@ namespace Komora.Areas.User.Controllers
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                 model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal);
-                model.RecipeNames = _db.Recipes
-                               .Select(r => new { r.Id, r.Name })  // Select only necessary fields
-                               .ToDictionary(r => r.Id, r => r.Name);  // Convert to dictionary
+                //model.RecipeNames = _db.Recipes
+                //               .Select(r => new { r.Id, r.Name })  // Select only necessary fields
+                //               .ToDictionary(r => r.Id, r => r.Name);  // Convert to dictionary
+                var recipes = _db.Recipes.ToList();
+                foreach (var recipe in recipes)
+                {
+                    if (!model.RecipeNames.ContainsKey(recipe.Id))  // Check to avoid key conflicts
+                    {
+                        model.RecipeNames.Add(recipe.Id, (_unitOfWork.Meal.Get(u => u.Id == recipe.MealId).Name, recipe.Name ));
+                    }
+                }
 
                 return View(model); // Return to the Index view with the calculated data
             }
