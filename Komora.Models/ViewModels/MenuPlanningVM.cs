@@ -16,6 +16,8 @@ namespace Komora.Models.ViewModels
         public int? TotalCalories { get; set; }  // Optional: total calories for the entire menu
         public bool IsVegan { get; set; }  // Indicates if the entire menu is vegan
 
+        public bool IsRepeat { get; set; }  
+
         // List to hold calculated menus
         public List<CalculateMenuVM> CalculatedMenus { get; set; } = new List<CalculateMenuVM>();
 

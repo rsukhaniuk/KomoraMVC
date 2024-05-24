@@ -33,7 +33,7 @@ namespace Komora.Areas.User.Controllers
             this._db = db;
         }
 
-        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal, int TotalCalories, bool IsVeg)
+        public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal, int TotalCalories, bool IsVeg, bool IsRepeat )
         {
             var plannedMenus = new List<CalculateMenuVM>();
             double totalCost = 0;
@@ -112,34 +112,56 @@ namespace Komora.Areas.User.Controllers
                     if (suitableRecipes.Count > 0)
                     {
 
-                        // Find the menu from the previous day
-                        var previousMenu = plannedMenus.FirstOrDefault(menu => menu.Menu.Date == day.AddDays(-1));
-                        HashSet<int> previousDayRecipeIds = new HashSet<int>();
-                        if (previousMenu != null)
+                        if (!IsRepeat)
                         {
-                            foreach (var recipePair in suitableRecipes)
+                            // Find the menu from the previous day
+                            var previousMenu = plannedMenus.FirstOrDefault(menu => menu.Menu.Date == day.AddDays(-1));
+                            HashSet<int> previousDayRecipeIds = new HashSet<int>();
+                            if (previousMenu != null)
                             {
-                                var currRecipe = recipePair.Key;
-                                var currIngredients = recipePair.Value;
-                                if (!previousMenu.MenuRecipes.Any(mr => mr.RecipeId == currRecipe.Id) || suitableRecipes.Count == 1)
+                                foreach (var recipePair in suitableRecipes)
                                 {
-                                    dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = currRecipe.Id, Servings = servingsPerMeal });
-                                    dailyCaloriesConsumed += (int)currRecipe.Calories;
-                                    // Calculate the required quantity of each ingredient and update virtual inventory
-                                    foreach (var ingredient in currIngredients)
+                                    var currRecipe = recipePair.Key;
+                                    var currIngredients = recipePair.Value;
+                                    if (!previousMenu.MenuRecipes.Any(mr => mr.RecipeId == currRecipe.Id) /*|| suitableRecipes.Count == 1*/)
                                     {
-                                        var requiredQuantity = ingredient.Quantity * servingsPerMeal;
-                                        virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
+                                        dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = currRecipe.Id, Servings = servingsPerMeal });
+                                        dailyCaloriesConsumed += (int)currRecipe.Calories;
+                                        // Calculate the required quantity of each ingredient and update virtual inventory
+                                        foreach (var ingredient in currIngredients)
+                                        {
+                                            var requiredQuantity = ingredient.Quantity * servingsPerMeal;
+                                            virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
+                                        }
+                                        break;
                                     }
-                                    break;
+                                }
+
+                            }
+                            else
+                            {
+                                var recipe = suitableRecipes.First().Key;
+                                var ingredients = suitableRecipes.First().Value;
+
+                                dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = recipe.Id, Servings = servingsPerMeal });
+                                dailyCaloriesConsumed += (int)recipe.Calories;
+                                // Calculate the required quantity of each ingredient and update virtual inventory
+                                foreach (var ingredient in ingredients)
+                                {
+                                    var requiredQuantity = ingredient.Quantity * servingsPerMeal;
+                                    virtualInventory[ingredient.ProductId].RemainQuantity -= requiredQuantity;  // Deduct from virtual inventory
                                 }
                             }
-
                         }
                         else
                         {
-                            var recipe = suitableRecipes.First().Key;
-                            var ingredients = suitableRecipes.First().Value;
+
+                            var recipeWithMinCalories = suitableRecipes
+                                .OrderBy(r => r.Key.Calories)  // Order by calories ascending
+                                .FirstOrDefault();
+
+                            var recipe = recipeWithMinCalories.Key;
+                            var ingredients = recipeWithMinCalories.Value;
 
                             dailyMenuRecipes.Add(new MenuRecipe { MenuId = dailyMenu.Id, RecipeId = recipe.Id, Servings = servingsPerMeal });
                             dailyCaloriesConsumed += (int)recipe.Calories;
@@ -177,6 +199,7 @@ namespace Komora.Areas.User.Controllers
                 CalculatedMenus = new List<CalculateMenuVM>(), // Initially empty
                 TotalCalories = 0,
                 IsVegan = false,
+                IsRepeat = true,
         };
 
             // Fetch the recipes
@@ -202,7 +225,7 @@ namespace Komora.Areas.User.Controllers
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal, (int)model.TotalCalories, model.IsVegan);
+                model.CalculatedMenus = PlanMenus(model.StartDate, model.EndDate, userId, model.ServingsPerMeal, (int)model.TotalCalories, model.IsVegan, model.IsRepeat);
                 //model.RecipeNames = _db.Recipes
                 //               .Select(r => new { r.Id, r.Name })  // Select only necessary fields
                 //               .ToDictionary(r => r.Id, r => r.Name);  // Convert to dictionary
