@@ -49,6 +49,13 @@ namespace Komora.Models
         [ValidateNever]
         public IdentityUser User { get; set; }
 
+        // Optional fields
+        [DisplayName("Calories")]
+        public int? Calories { get; set; }  // Nullable int for Calories
+
+        [DisplayName("Vegetarian")]
+        public bool IsVegetarian { get; set; } = false;  // Default value set to false
+
     }   
        
 }
