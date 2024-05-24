@@ -10,9 +10,11 @@ function loadDataTable() {
         "columns": [
             { data: 'id', "width": "5%" },
             { data: 'name', "width": "20%" },
-            { data: 'cookingTime', "width": "20%" },
+            { data: 'cookingTime', "width": "10%" },
             { data: 'preparation', "width": "20%" },
             { data: 'meal.name', "width": "10%" },
+            { data: 'calories', "width": "5%" },
+            { data: 'isVegetarian', "width": "5%" },
             {
                 data: 'id',
                 "render": function (data) {

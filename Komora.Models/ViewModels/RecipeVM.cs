@@ -18,5 +18,13 @@ namespace Komora.Models.ViewModels
         public IEnumerable<SelectListItem> UnitList { get; set; }
         public IEnumerable<SelectListItem> MealList { get; set; }
 
+        public bool IsVegDisplay
+        {
+            get => IsVeg ?? false; // Default to false or true depending on your logic
+            set => IsVeg = value;
+        }
+
+        public bool? IsVeg { get; set; }
+
     }
 }

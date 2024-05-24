@@ -157,6 +157,8 @@ namespace Komora.Areas.User.Controllers
                 recipeVM.Recipe.imgUrl = @"\images\recipe\" + fileName;
             }
 
+            recipeVM.Recipe.IsVegetarian = (bool)recipeVM.IsVeg;
+
             if (recipeVM.Recipe.Id == 0)
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;

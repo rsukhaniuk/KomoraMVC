@@ -39,6 +39,16 @@
                     </select>
                     <span asp-validation-for="Recipe.MealId" class="text-danger"></span>
                 </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Recipe.Calories" class="control-label pb-1"></label>
+                    <textarea asp-for="@Model.Recipe.Calories" class="form-control"></textarea>
+                    <span asp-validation-for="Recipe.Calories" class="text-danger"></span>
+                </div>
+                <div class="form-check mb-3">
+                    <input asp-for="IsVegDisplay" class="form-check-input" type="checkbox" id="recipeIsVegDisplay" />
+                    <label class="form-check-label" for="recipeIsVegDisplay">is Vegetarian</label>
+                    <span asp-validation-for="IsVegDisplay" class="text-danger"></span>
+                </div>
                 <div class="border p-3 mt-4" id="ingredients-container">
                     <div class="row pb-2">
                         <h4>Ingredients</h4>
