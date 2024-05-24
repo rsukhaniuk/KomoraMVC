@@ -24,18 +24,50 @@
             <span asp-validation-for="ServingsPerMeal" class="text-danger"></span>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary form-control" style="height:50px">Calculate Menu</button>
-            </div>
+        <div class="col-md-2">
+            <!-- Adjust the column size as needed -->
+            <button type="submit" class="btn btn-primary form-control" style="height:50px;">Calculate Menu</button>
         </div>
     </div>
 </form>
 
+<!-- Display calculated menus -->
 @if (Model.CalculatedMenus.Any())
 {
-    <div class="row mt-4">
-        <div class="col-12">
+    <div class="border p-3 mt-4">
+        <h3>Calculated Menus</h3>
+        <form asp-controller="CalculateMenu" asp-action="Insert" method="post">
+            @for (int i = 0; i < Model.CalculatedMenus.Count; i++)
+            {
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h5 class="card-title">Menu for @(Model.CalculatedMenus[i].Menu.Date.HasValue ? Model.CalculatedMenus[i].Menu.Date.Value.ToShortDateString() : "Date not set")</h5>
+                        <ul>
+                            @for (int j = 0; j < Model.CalculatedMenus[i].MenuRecipes.Count; j++)
+                            {
+                                <li>@Model.RecipeNames[Model.CalculatedMenus[i].MenuRecipes[j].RecipeId] - Servings: @Model.CalculatedMenus[i].MenuRecipes[j].Servings</li>
+                                <input type="hidden" asp-for="@Model.CalculatedMenus[i].MenuRecipes[j].RecipeId" />
+                                <input type="hidden" asp-for="@Model.CalculatedMenus[i].MenuRecipes[j].Servings" />
+                                <input type="hidden" asp-for="@Model.CalculatedMenus[i].Menu.Date" />
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+            <input type="hidden" asp-for="@Model.StartDate" />
+            <input type="hidden" asp-for="@Model.EndDate" />
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success form-control" style="height: 50px; width: auto;">Add Menus</button>
+            </div>
+
+        </form>
+    </div>
+}
+
+@* @if (Model.CalculatedMenus.Any())
+{
+    <div class=" border p-3 row mt-4">
+        <div class="col-12 p-3">
             <h3>Calculated Menus</h3>
             <div>
                 @foreach (var menu in Model.CalculatedMenus)
@@ -50,14 +82,19 @@
                                 }
                             </ul>
                             @* <p>Total Cost: @menu.TotalCost hidden </p>
-                            <p>Can Prepare: @(menu.CanPrepare ? "Yes" : "No") hidden </p> *@
+                            <p>Can Prepare: @(menu.CanPrepare ? "Yes" : "No") hidden </p> 
                         </div>
                     </div>
                 }
             </div>
+            
         </div>
+            <a asp-controller="CalculateMenu" asp-action="Insert" class="btn btn-success form-control d-flex justify-content-center align-items-center" style="height: 50px">
+                Add Menus
+            </a>
     </div>
 }
+*@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
