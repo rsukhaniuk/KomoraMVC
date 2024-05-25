@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository
 {
     /// <summary>
-    /// Class that implements the ICategoryRepository interface 
+    /// Class that implements the IMealRepository interface 
     /// </summary>
     public class MealRepository : Repository<Meal>, IMealRepository
     {
@@ -21,10 +21,10 @@ namespace Komora.DataAccess.Repository
         }
 
         /// <summary>
-        /// Method that updates a category
+        /// Method that updates a meal
         /// </summary>
         /// <param name="obj">
-        /// category to be updated
+        /// meal to be updated
         /// </param>
         public void Update(Meal obj)
         {

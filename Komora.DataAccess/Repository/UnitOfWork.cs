@@ -18,7 +18,7 @@ namespace Komora.DataAccess.Repository
         private readonly ApplicationDbContext _db;
 
         /// <summary>
-        /// Constructor that initializes the database context and the CategoryRepository
+        /// Constructor that initializes the database context and the Repositories
         /// </summary>
         /// <param name="db"></param>
         public UnitOfWork(ApplicationDbContext db)
