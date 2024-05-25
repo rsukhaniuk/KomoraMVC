@@ -96,27 +96,7 @@ namespace Komora.Areas.User.Controllers
             }
         }
 
-        /// <summary>
-        /// Method that deletes a category
-        /// </summary>
-        /// <param name="id">id of the category to be deleted</param>
-        /// <returns></returns>
-        //public IActionResult Delete(int? id)
-        //{
-        //    if (id == null || id == 0)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var category = _unitOfWork.Category.Get(c => c.Id == id);
-
-        //    if (category == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(category);
-        //}
+        
 
         /// <summary>
         /// HttpDelete method that deletes a category
