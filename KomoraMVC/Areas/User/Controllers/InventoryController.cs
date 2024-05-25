@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Hosting.Internal;
 using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Komora.Areas.User.Controllers
 {
@@ -41,6 +42,7 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var Inventory = _unitOfWork.Inventory.GetAll(u => u.UserId == userId, includeProperties: "Product");
+            
             return View(Inventory);
         }
 
@@ -171,6 +173,7 @@ namespace Komora.Areas.User.Controllers
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             List<InventoryItem> objInventory = _unitOfWork.Inventory.GetAll(u => u.UserId == userId, includeProperties: "Product").ToList();
+
             return Json(new { data = objInventory });
         }
 

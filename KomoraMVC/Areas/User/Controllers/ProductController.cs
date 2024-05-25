@@ -128,14 +128,17 @@ namespace Komora.Areas.User.Controllers
                 if (obj.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(obj.Product);
+                    TempData["success"] = "Product added successfully.";
+
                 }
                 else
                 {
                     _unitOfWork.Product.Update(obj.Product);
+                    TempData["success"] = "Product updated successfully.";
+
                 }
 
                 _unitOfWork.Save();
-                TempData["success"] = "Product added successfully.";
                 return RedirectToAction("Index", new { Area = "User" });
             }
             else
