@@ -25,6 +25,7 @@ namespace Komora.Areas.User.Controllers
         /// Constructor that initializes the unitOfWork
         /// </summary>
         /// <param name="unitOfWork"></param>
+        /// <param name="hostingEnvironment"></param>
         public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment)
         {
             _unitOfWork = unitOfWork;
@@ -46,7 +47,7 @@ namespace Komora.Areas.User.Controllers
         /// Method that returns the view with the form to create or update a product
         /// </summary>
         /// <param name="id">
-        /// id of the product to be updated
+        /// id of the product to be updated or created
         /// </param>
         /// <returns>
         /// View with the form to create or update a product
@@ -159,9 +160,9 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpDelete method that deletes a category
+        /// HttpDelete method that deletes a product
         /// </summary>
-        /// <param name="id">id of the category to be deleted</param>
+        /// <param name="id">id of the product to be deleted</param>
         /// <returns></returns>
         [Area("Admin")]
         [Authorize(Roles = SD.Role_Admin)]
@@ -186,6 +187,10 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
         }
 
+        /// <summary>
+        /// Method that returns the list of products in json format
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         [HttpGet]
         public IActionResult GetAll()
@@ -194,12 +199,7 @@ namespace Komora.Areas.User.Controllers
             return Json(new { data = objProductList });
         }
 
-        [HttpGet]
-        public IActionResult GetAllById()
-        {
-            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category,Unit").ToList();
-            return Json(new { data = objProductList });
-        }
+        
     }
 }
 

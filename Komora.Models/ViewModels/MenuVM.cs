@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// Menu View Model
+    /// </summary>
     public class MenuVM
     {
         public Menu Menu { get; set; }

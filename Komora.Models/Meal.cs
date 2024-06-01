@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
+    /// <summary>
+    /// Model that represents a Meal
+    /// </summary>
     public class Meal
     {
         [Key]

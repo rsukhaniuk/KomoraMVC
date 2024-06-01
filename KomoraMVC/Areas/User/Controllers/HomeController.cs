@@ -10,6 +10,9 @@ using System.Security.Claims;
 
 namespace Komora.Areas.User.Controllers
 {
+    /// <summary>
+    /// Controller that manages the home page of the user
+    /// </summary>
     [Area("User")]
     [Authorize]
     public class HomeController : Controller
@@ -17,12 +20,21 @@ namespace Komora.Areas.User.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Constructor that initializes the logger and the unitOfWork
+        /// </summary>
+        /// <param name="logger">logger</param>
+        /// <param name="unitOfWork">unit of work</param>
         public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Method that returns the view with the list of recipes
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -33,6 +45,11 @@ namespace Komora.Areas.User.Controllers
             return View(recipeList);
         }
 
+        /// <summary>
+        /// Method that returns the view with the details of a recipe
+        /// </summary>
+        /// <param name="recipeId"></param>
+        /// <returns></returns>
         public IActionResult Details(int recipeId)
         {
             RecipeVM recipeVM = new RecipeVM()
@@ -46,7 +63,6 @@ namespace Komora.Areas.User.Controllers
         }
 
         
-
         public IActionResult Privacy()
         {
             return View();

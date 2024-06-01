@@ -1,35 +1,46 @@
 ﻿@model IEnumerable<Recipe>
 
 <div class="row pb-3">
-    @foreach (var recipe in Model)
+    @if (Model.Any())
     {
-        <div class="col-lg-3 col-sm-6">
-            <div class="row p-2">
-                <div class="col-12 p-1">
-                    <div class="card  p-3 border-2 rounded">
-                        <img src="@recipe.imgUrl" class="card-img-top rounded" style="width: 200px; height: 200px; object-fit: cover; display: block; margin: auto;" />
-                        <div class="card-body pb-0">
-                            <div class="pl-1">
-                                <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@recipe.Name</p>
-                                <p class="card-title text-dark text-center"><b>@recipe.Meal.Name</b></p>
+        @foreach (var recipe in Model)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="row p-2">
+                    <div class="col-12 p-1">
+                        <div class="card  p-3 border-2 rounded">
+                            <img src="@recipe.imgUrl" class="card-img-top rounded" style="width: 200px; height: 200px; object-fit: cover; display: block; margin: auto;" />
+                            <div class="card-body pb-0">
+                                <div class="pl-1">
+                                    <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">@recipe.Name</p>
+                                    <p class="card-title text-dark text-center"><b>@recipe.Meal.Name</b></p>
+                                </div>
+                                <div class="pl-1">
+                                    <p class="text-dark text-opacity-75 text-center">
+                                        Calories:
+                                        <span>
+                                            @recipe.Calories
+                                        </span>
+                                    </p>
+                                </div>
                             </div>
-                            <div class="pl-1">
-                                <p class="text-dark text-opacity-75 text-center">
-                                    Calories:
-                                    <span>
-                                        @recipe.Calories
-                                    </span>
-                                </p>
+                            <div>
+                                <a asp-action="Details" asp-route-recipeId="@recipe.Id" class="btn btn-primary bg-gradient border-0 form-control">
+                                    Details
+                                </a>
                             </div>
-                        </div>
-                        <div>
-                             <a asp-action="Details" asp-route-recipeId="@recipe.Id" class="btn btn-primary bg-gradient border-0 form-control">
-                                Details
-                            </a> 
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                You have not created any recipes yet. Try adding a new recipe.
+            </div>
+        </div>  
     }
 </div>

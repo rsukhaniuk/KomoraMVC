@@ -23,9 +23,10 @@ namespace Komora.Areas.User.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
 
         /// <summary>
-        /// Constructor that initializes the unitOfWork
+        /// Constructor that initializes the unitOfWork and the hostingEnvironment
         /// </summary>
         /// <param name="unitOfWork"></param>
+        /// <param name="hostingEnvironment"></param>
         public InventoryController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment)
         {
             this._unitOfWork = unitOfWork;
@@ -33,7 +34,7 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// Method that returns the view with the list of products
+        /// Method that returns the view with the list of inventory items
         /// </summary>
         /// <returns></returns>
         public IActionResult Index()
@@ -47,13 +48,13 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// Method that returns the view with the form to create or update a product
+        /// Method that returns the view with the form to create or update a inventory item
         /// </summary>
         /// <param name="id">
-        /// id of the product to be updated
+        /// id of the inventory item to be updated or created
         /// </param>
         /// <returns>
-        /// View with the form to create or update a product
+        /// View with the form to create or update a inventory item
         /// </returns>
         public IActionResult Upsert(int? id)
         {
@@ -93,13 +94,13 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpPost method that creates or updates a product
+        /// HttpPost method that creates or updates a inventory item
         /// </summary>
         /// <param name="obj">
-        /// product to be created or updated
+        /// inventory item to be created or updated
         /// </param>
         /// <param name="file">
-        /// Image of product
+        /// Image of inventory item
         /// </param>
         /// <returns></returns>
         [HttpPost]
@@ -145,9 +146,9 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpDelete method that deletes a category
+        /// HttpDelete method that deletes a inventory item
         /// </summary>
-        /// <param name="id">id of the category to be deleted</param>
+        /// <param name="id">id of the inventory item to be deleted</param>
         /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(int? id)
@@ -166,6 +167,10 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
         }
 
+        /// <summary>
+        /// HttpGet method that returns all the inventory items in JSON format
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll()
         {

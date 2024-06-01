@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// View model for the MenuPlanning page
+    /// </summary>
     public class MenuPlanningViewModel
     {
         // Parameters for calculating the menu

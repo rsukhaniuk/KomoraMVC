@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository.IRepository
 {
     /// <summary>
-    /// Interface that defines the IProductRepository
+    /// Interface that defines the IProductRecipeRepository
     /// </summary>
     public interface IProductRecipeRepository : IRepository<ProductRecipe>
     {

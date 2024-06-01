@@ -21,10 +21,10 @@ namespace Komora.DataAccess.Repository
         }
 
         /// <summary>
-        /// Method that updates a category
+        /// Method that updates a menu
         /// </summary>
         /// <param name="obj">
-        /// category to be updated
+        /// menu to be updated
         /// </param>
         public void Update(Menu obj)
         {

@@ -82,7 +82,7 @@ namespace Komora.DataAccess.Repository
         public IMenuRecipeRepository MenuRecipe { get; private set; }
 
         /// <summary>
-        /// Property that returns the IInventoryRepository
+        /// Property that returns the IOrderItemRepository
         /// </summary>
         public IOrderItemRepository OrderItem { get; private set; }
 

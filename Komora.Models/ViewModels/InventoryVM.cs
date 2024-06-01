@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// Viewmodel for Inventory
+    /// </summary>
     public class InventoryVM
     {
         public InventoryItem InventoryItem { get; set; }

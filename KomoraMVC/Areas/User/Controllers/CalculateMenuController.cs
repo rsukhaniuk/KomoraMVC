@@ -14,7 +14,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace Komora.Areas.User.Controllers
 {
     /// <summary>
-    /// Controller that manages the Category model
+    /// Controller that manages the calculation of the menu
     /// </summary>
     [Area("User")]
     [Authorize]
@@ -24,7 +24,7 @@ namespace Komora.Areas.User.Controllers
         private readonly ApplicationDbContext _db;
 
         /// <summary>
-        /// Constructor that initializes the unitOfWork
+        /// Constructor that initializes the unitOfWork and dbContext
         /// </summary>
         /// <param name="unitOfWork"></param>
         public CalculateMenuController(IUnitOfWork unitOfWork, ApplicationDbContext db)
@@ -33,6 +33,19 @@ namespace Komora.Areas.User.Controllers
             this._db = db;
         }
 
+        /// <summary>
+        /// Method that calculates the menu with the given parameters
+        /// </summary>
+        /// <param name="startDate">start date</param>
+        /// <param name="endDate">end date</param>
+        /// <param name="userId">user id</param>
+        /// <param name="servingsPerMeal">servings per meal</param>
+        /// <param name="TotalCalories">total calories</param>
+        /// <param name="IsVeg">is vegetarian</param>
+        /// <param name="IsRepeat">is repeated recipes</param>
+        /// <returns>
+        /// List of calculated menus
+        /// </returns>
         public List<CalculateMenuVM> PlanMenus(DateTime startDate, DateTime endDate, string userId, int servingsPerMeal, int TotalCalories, bool IsVeg, bool IsRepeat )
         {
             var plannedMenus = new List<CalculateMenuVM>();
@@ -79,8 +92,6 @@ namespace Komora.Areas.User.Controllers
                     bool canPrepare = true;
                     Dictionary<Recipe, List<ProductRecipe>> suitableRecipes = new Dictionary<Recipe, List<ProductRecipe>>();
 
-                    //Recipe newRecipe = new Recipe();
-                    //var newIngredients = new List<ProductRecipe>();
                     foreach (var recipe in mealRecipes)
                     {
                         bool recipeIsVegan = recipe.IsVegetarian;
@@ -181,12 +192,15 @@ namespace Komora.Areas.User.Controllers
                     plannedMenus.Add(new CalculateMenuVM { Menu = dailyMenu, MenuRecipes = dailyMenuRecipes, TotalCost = totalCost, CanPrepare = canPrepareAll, TotalCaloriesMenu = dailyCaloriesConsumed });
                 }
 
-                  // Stop if budget exceeded
             }
 
             return plannedMenus;
         }
 
+        /// <summary>
+        /// HttpGet action method to display the form for menu planning.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Index()
         {
@@ -217,6 +231,11 @@ namespace Komora.Areas.User.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// HttpPost action method to handle the form submission for menu planning.
+        /// </summary>
+        /// <param name="model">Menu planning ViewModel</param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Index(MenuPlanningViewModel model)
         {
@@ -244,6 +263,11 @@ namespace Komora.Areas.User.Controllers
             return View(model); // Return the model to display any validation errors
         }
 
+        /// <summary>
+        /// HttpPost action method to insert the planned menus into the database.
+        /// </summary>
+        /// <param name="model">viewmodel</param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Insert (MenuPlanningViewModel model)
         {
@@ -387,7 +411,7 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Menu added successfully." });
         }
 
-
+        
         public List<OrderVM> CalculatePlanQuan(CalculateMenuVM menuVM, double tolerance)
         {
 
@@ -464,40 +488,6 @@ namespace Komora.Areas.User.Controllers
                 return new List<OrderVM>();
             }
         }
-
-        //public IActionResult Index()
-        //{
-        //    var claimsIdentity = (ClaimsIdentity)User.Identity;
-        //    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-        //    var menus = PlanMenus(DateTime.Now, DateTime.Now.AddDays(2), userId, 3);
-
-
-
-        //    return RedirectToAction("Index", "Home");
-        //}
-
-        //[HttpPost]
-        //public IActionResult Insert()
-        //{
-        //    var claimsIdentity = (ClaimsIdentity)User.Identity;
-        //    var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-        //    var orders = CalculateOrders();
-        //    foreach (var item in orders)
-        //    {
-        //        InventoryItem inventoryItem = new InventoryItem();
-        //        inventoryItem.UserId = userId;
-        //        inventoryItem.ProductId = item.ProductId;
-        //        inventoryItem.RemainQuantity = item.OrderQuan;
-        //        inventoryItem.IncomeDate = DateTime.Now;
-        //        _unitOfWork.Inventory.Add(inventoryItem);
-        //    }
-
-        //    _unitOfWork.Save();
-        //    TempData["success"] = "Products added successfully.";
-        //    return RedirectToAction("Index");
-        //}
 
     }
 }

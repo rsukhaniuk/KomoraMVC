@@ -67,7 +67,7 @@ namespace Komora.DataAccess.Data
         public DbSet<InventoryItem> Inventory { get; set; }
 
         /// <summary>
-        /// Property that represents the Inventory table
+        /// Property that represents the Orders table
         /// </summary>
         public DbSet<OrderItem> OrderItems { get; set; }
 

@@ -21,10 +21,10 @@ namespace Komora.DataAccess.Repository
         }
 
         /// <summary>
-        /// Method that updates a product
+        /// Method that updates an inventory item
         /// </summary>
         /// <param name="obj">
-        /// product to be updated
+        /// inventory item to be updated
         /// </param>
         public void Update(InventoryItem obj)
         {

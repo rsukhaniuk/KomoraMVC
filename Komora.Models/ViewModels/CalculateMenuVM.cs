@@ -8,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// View Model for the Calculate Menu
+    /// </summary>
     public class CalculateMenuVM
     {
+
         public Menu Menu { get; set; }
         public List<MenuRecipe> MenuRecipes { get; set; }
         public double TotalCost { get; set; }

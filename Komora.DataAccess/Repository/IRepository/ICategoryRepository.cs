@@ -12,6 +12,10 @@ namespace Komora.DataAccess.Repository.IRepository
     /// </summary>
     public interface ICategoryRepository : IRepository<Category>
     {
+        /// <summary>
+        /// Method that updates a category
+        /// </summary>
+        /// <param name="obj"></param>
         void Update(Category obj);
     }
 }

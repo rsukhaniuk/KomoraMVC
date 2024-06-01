@@ -51,7 +51,7 @@ namespace Komora.Areas.User.Controllers
         /// Method that returns the view with the form to create or update a recipe
         /// </summary>
         /// <param name="id">
-        /// id of the recipe to be updated
+        /// id of the recipe to be updated or created
         /// </param>
         /// <returns>
         /// View with the form to create or update a recipe
@@ -112,19 +112,13 @@ namespace Komora.Areas.User.Controllers
             }
         }
 
-        public IActionResult SaveRecipeToSession(RecipeVM model)
-        {
-            var recipeJson = JsonConvert.SerializeObject(model);
-            HttpContext.Session.SetString("RecipeData", recipeJson);
-
-            return RedirectToAction("UpsertIngridient");
-        }
+        
 
         /// <summary>
         /// HttpPost method that creates or updates a recipe
         /// </summary>
         /// <param name="obj">
-        /// recipe to be created or updated
+        /// recipe ViewModel that contains recipe and igridients be created or updated
         /// </param>
         /// <param name="file">
         /// Image of recipe
@@ -228,149 +222,12 @@ namespace Komora.Areas.User.Controllers
             }
             return RedirectToAction("Index");
 
-            //if (recipeVM.ProductRecipes != null)
-            //    foreach (var productRecipe in recipeVM.ProductRecipes)
-            //    {
-            //        productRecipe.RecipeId = recipeVM.Recipe.Id; // Ensure the RecipeId is set
-
-            //        if (string.IsNullOrWhiteSpace(productRecipe.ProductId.ToString()) || productRecipe.ProductId == 0)
-            //        {
-            //            errorMessage += "Product ID is required. ";
-            //            hasErrors = true;
-            //        }
-
-            //        if (!hasErrors)
-            //        {
-            //            if (productRecipe.Id == 0)
-            //            {
-            //                _unitOfWork.ProductRecipe.Add(productRecipe);
-            //            }
-            //            else
-            //            {
-            //                _unitOfWork.ProductRecipe.Update(productRecipe);
-            //            }
-            //        }
-            //    }
-            //if (!hasErrors)
-            //{
-            //    _unitOfWork.Save();
-            //    TempData["success"] = "Recipe added successfully.";
-            //}
-
-            return RedirectToAction("Index");
         }
 
-
-        public IActionResult UpsertIngridient(int? id)
-        {
-
-            IEnumerable<SelectListItem> RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            IEnumerable<SelectListItem> ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            IEnumerable<SelectListItem> UnitList = _unitOfWork.Unit.GetAll().Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            ProductRecipeVM productRecipeVM = new ProductRecipeVM()
-            {
-                RecipeList = RecipeList,
-                ProductList = ProductList,
-                UnitList = UnitList,
-                ProductRecipe = new ProductRecipe()
-
-            };
-
-
-
-            if (id == null || id == 0)
-            {
-                return View(productRecipeVM);
-            }
-            else
-            {
-                productRecipeVM.ProductRecipe = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
-                return View(productRecipeVM);
-            }
-        }
-
-
-        [HttpPost]
-        public IActionResult UpsertIngridient(ProductRecipeVM obj, IFormFile? file)
-        {
-            if (ModelState.IsValid)
-            {
-                if (obj.ProductRecipe.Id == 0)
-                {
-                    //_unitOfWork.ProductRecipe.Add(obj.ProductRecipe);
-                    productRecipes.Add(obj.ProductRecipe);
-                }
-                else
-                {
-                    //_unitOfWork.ProductRecipe.Update(obj.ProductRecipe);
-                    productRecipes.Add(obj.ProductRecipe);
-                }
-
-                //_unitOfWork.Save();
-                //TempData["success"] = "ProductRecipe added successfully.";
-
-                return RedirectToAction("Upsert");
-                //string referer = Request.Headers["Referer"].ToString();
-                //if (!string.IsNullOrEmpty(referer))
-                //{
-                //    return Redirect(referer);  // Redirect to the previous page
-                //}
-                //else
-                //{
-                //    return RedirectToAction("Index");  // Fallback to the index action if referer is not available
-                //}
-            }
-            else
-            {
-                obj.RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                });
-                obj.ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                });
-                obj.UnitList = _unitOfWork.Unit.GetAll().Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                });
-                return View(obj);
-
-            }
-        }
-
-        [HttpDelete]
-        public IActionResult DeleteIngridient(int? id)
-        {
-            var productRecipeToBeDeleted = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
-            if (productRecipeToBeDeleted == null)
-            {
-                return Json(new { success = false, message = "Error while deleting" });
-            }
-
-
-
-            _unitOfWork.ProductRecipe.Remove(productRecipeToBeDeleted);
-            _unitOfWork.Save();
-
-            return Json(new { success = true, message = "Delete Successful" });
-        }
-
+        /// <summary>
+        /// HttpGet method that gets all ingridients
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAllIngridients()
         {
@@ -378,6 +235,11 @@ namespace Komora.Areas.User.Controllers
             return Json(new { data = objProductRecipeList });
         }
 
+        /// <summary>
+        /// HttpGet method that gets all ingridients by recipe id
+        /// </summary>
+        /// <param name="recipeId"></param>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAllIngridientsById(int recipeId)
         {
@@ -413,6 +275,10 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
         }
 
+        /// <summary>
+        /// HttpGet method that gets all recipes in json format
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -422,6 +288,112 @@ namespace Komora.Areas.User.Controllers
             List<Recipe> objRecipeList = _unitOfWork.Recipe.GetAll(u => u.UserId == userId, includeProperties: "Meal").ToList();
             return Json(new { data = objRecipeList });
         }
+
+        public IActionResult SaveRecipeToSession(RecipeVM model)
+        {
+            var recipeJson = JsonConvert.SerializeObject(model);
+            HttpContext.Session.SetString("RecipeData", recipeJson);
+
+            return RedirectToAction("UpsertIngridient");
+        }
+
+        //public IActionResult UpsertIngridient(int? id)
+        //{
+
+        //    IEnumerable<SelectListItem> RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
+        //    {
+        //        Text = i.Name,
+        //        Value = i.Id.ToString()
+        //    });
+        //    IEnumerable<SelectListItem> ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
+        //    {
+        //        Text = i.Name,
+        //        Value = i.Id.ToString()
+        //    });
+        //    IEnumerable<SelectListItem> UnitList = _unitOfWork.Unit.GetAll().Select(i => new SelectListItem
+        //    {
+        //        Text = i.Name,
+        //        Value = i.Id.ToString()
+        //    });
+        //    ProductRecipeVM productRecipeVM = new ProductRecipeVM()
+        //    {
+        //        RecipeList = RecipeList,
+        //        ProductList = ProductList,
+        //        UnitList = UnitList,
+        //        ProductRecipe = new ProductRecipe()
+
+        //    };
+
+
+
+        //    if (id == null || id == 0)
+        //    {
+        //        return View(productRecipeVM);
+        //    }
+        //    else
+        //    {
+        //        productRecipeVM.ProductRecipe = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
+        //        return View(productRecipeVM);
+        //    }
+        //}
+
+        //[HttpPost]
+        //public IActionResult UpsertIngridient(ProductRecipeVM obj, IFormFile? file)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (obj.ProductRecipe.Id == 0)
+        //        {
+        //            productRecipes.Add(obj.ProductRecipe);
+        //        }
+        //        else
+        //        {
+        //            productRecipes.Add(obj.ProductRecipe);
+        //        }
+
+
+
+        //        return RedirectToAction("Upsert");
+
+        //    }
+        //    else
+        //    {
+        //        obj.RecipeList = _unitOfWork.Recipe.GetAll().Select(i => new SelectListItem
+        //        {
+        //            Text = i.Name,
+        //            Value = i.Id.ToString()
+        //        });
+        //        obj.ProductList = _unitOfWork.Product.GetAll().Select(i => new SelectListItem
+        //        {
+        //            Text = i.Name,
+        //            Value = i.Id.ToString()
+        //        });
+        //        obj.UnitList = _unitOfWork.Unit.GetAll().Select(i => new SelectListItem
+        //        {
+        //            Text = i.Name,
+        //            Value = i.Id.ToString()
+        //        });
+        //        return View(obj);
+
+        //    }
+        //}
+
+        //[HttpDelete]
+        //public IActionResult DeleteIngridient(int? id)
+        //{
+        //    var productRecipeToBeDeleted = _unitOfWork.ProductRecipe.Get(u => u.Id == id);
+        //    if (productRecipeToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+
+
+
+        //    _unitOfWork.ProductRecipe.Remove(productRecipeToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
     }
 }
 

@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Komora.Models
 {
+    /// <summary>
+    /// Model that represents the Product
+    /// </summary>
     public class Product
     {
         [Key]

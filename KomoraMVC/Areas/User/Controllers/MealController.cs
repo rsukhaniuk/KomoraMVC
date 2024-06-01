@@ -6,6 +6,9 @@ using System.Security.Claims;
 
 namespace Komora.Areas.User.Controllers
 {
+    /// <summary>
+    /// Controller that manages the Meal model
+    /// </summary>
     [Area("User")]
     [Authorize]
     public class MealController : Controller
@@ -22,7 +25,7 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// Method that returns the view with the list of units
+        /// Method that returns the view with the list of meals
         /// </summary>
         /// <returns></returns>
         public IActionResult Index()
@@ -36,13 +39,13 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// Method that returns the view with the form to create or update a unit
+        /// Method that returns the view with the form to create or update a meal
         /// </summary>
         /// <param name="id">
-        /// id of the unit to be updated
+        /// id of the meal to be updated
         /// </param>
         /// <returns>
-        /// View with the form to create or update a unit
+        /// View with the form to create or update a meal
         /// </returns>
         public IActionResult Upsert(int? id)
         {
@@ -63,13 +66,10 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpPost method that creates or updates a unit
+        /// HttpPost method that creates or updates a meal
         /// </summary>
         /// <param name="obj">
-        /// Unit to be created or updated
-        /// </param>
-        /// <param name="file">
-        /// Image of unit
+        /// Meal to be created or updated
         /// </param>
         /// <returns></returns>
         [HttpPost]
@@ -102,9 +102,9 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpDelete method that deletes a category
+        /// HttpDelete method that deletes a meal
         /// </summary>
-        /// <param name="id">id of the category to be deleted</param>
+        /// <param name="id">id of the meal to be deleted</param>
         /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(int? id)
@@ -124,6 +124,10 @@ namespace Komora.Areas.User.Controllers
             //return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// HttpGet Method that returns all the meals of the user in json format
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll()
         {

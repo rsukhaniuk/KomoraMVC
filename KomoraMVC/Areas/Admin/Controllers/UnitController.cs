@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Komora.Areas.Admin.Controllers
 {
+    /// <summary>
+    /// Controller that manages the Unit model
+    /// </summary>
     [Area("Admin")]
     [Authorize(Roles = SD.Role_Admin)]
     public class UnitController : Controller
@@ -88,7 +91,7 @@ namespace Komora.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// HttpDelete method that deletes a category
+        /// HttpDelete method that deletes a unit
         /// </summary>
         /// <param name="id">id of the category to be deleted</param>
         /// <returns></returns>
@@ -109,7 +112,13 @@ namespace Komora.Areas.Admin.Controllers
             return Json(new { success = true, message = "Delete Successful" });
             //return RedirectToAction("Index");
         }
-
+        /// <summary>
+        /// HttpGet method that gets all units
+        /// </summary>
+        /// <param></param>
+        /// <returns>
+        /// List of all units in json format
+        /// </returns>
         [HttpGet]
         public IActionResult GetAll()
         {

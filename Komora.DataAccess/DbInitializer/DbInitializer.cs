@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Komora.DataAccess.DbInitializer
 {
+    /// <summary>
+    /// DbInitializer class that initializes the database
+    /// </summary>
     public class DbInitializer : IDbInitializer
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -26,6 +29,9 @@ namespace Komora.DataAccess.DbInitializer
             _db = db;
         }
 
+        /// <summary>
+        /// Method that initializes the database with roles and an admin user
+        /// </summary>
         public void Initialize()
         {
             try

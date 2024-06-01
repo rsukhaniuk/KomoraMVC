@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository
 {
     /// <summary>
-    /// Class that implements the IMenuRepository interface 
+    /// Class that implements the IOrderItemRepository interface 
     /// </summary>
     public class OrderItemRepository : Repository<OrderItem>, IOrderItemRepository
     {
@@ -21,10 +21,10 @@ namespace Komora.DataAccess.Repository
         }
 
         /// <summary>
-        /// Method that updates a category
+        /// Method that updates a order
         /// </summary>
         /// <param name="obj">
-        /// category to be updated
+        /// order to be updated
         /// </param>
         public void Update(OrderItem obj)
         {

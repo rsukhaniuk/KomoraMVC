@@ -40,7 +40,7 @@ namespace Komora.Areas.User.Controllers
         /// Method that returns the view with the form to create or update a category
         /// </summary>
         /// <param name="id">
-        /// id of the category to be updated
+        /// id of the category to be updated or created
         /// </param>
         /// <returns>
         /// View with the form to create or update a category
@@ -122,6 +122,13 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
             //return RedirectToAction("Index");
         }
+
+        /// <summary>
+        /// HttpGet method that returns the list of categories in JSON format
+        /// </summary>
+        /// <returns>
+        /// The list of categories in JSON format
+        /// </returns>
         [Authorize(Roles = SD.Role_Admin + "," + SD.Role_User)]
         [HttpGet]
         public IActionResult GetAll()

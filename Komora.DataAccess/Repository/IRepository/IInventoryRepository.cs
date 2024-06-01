@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository.IRepository
 {
     /// <summary>
-    /// Interface that defines the CategoryRepository
+    /// Interface that defines the InventoryRepository
     /// </summary>
     public interface IInventoryRepository : IRepository<InventoryItem>
     {

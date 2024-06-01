@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository.IRepository
 {
     /// <summary>
-    /// Interface that defines the MenuRepository
+    /// Interface that defines the MenuRecipeRepository
     /// </summary>
     public interface IMenuRecipeRepository : IRepository<MenuRecipe>
     {

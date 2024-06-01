@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// ViewModel for ProductRecipe
+    /// </summary>
     public class ProductRecipeVM
     {
         public ProductRecipe ProductRecipe { get; set; }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository
 {
     /// <summary>
-    /// Class that implements the IProductRepository interface 
+    /// Class that implements the IProductRecipeRepository interface 
     /// </summary>
     public class ProductRecipeRepository : Repository<ProductRecipe>, IProductRecipeRepository
     {

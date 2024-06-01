@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models
 {
+    /// <summary>
+    /// Model that represents the Unit
+    /// </summary>
     public class Unit
     {
         [Key]

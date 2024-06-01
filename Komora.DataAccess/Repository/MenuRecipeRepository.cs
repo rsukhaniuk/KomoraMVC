@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Komora.DataAccess.Repository
 {
     /// <summary>
-    /// Class that implements the IProductRepository interface 
+    /// Class that implements the IMenuRecipeRepository interface 
     /// </summary>
     public class MenuRecipeRepository : Repository<MenuRecipe>, IMenuRecipeRepository
     {
@@ -21,10 +21,10 @@ namespace Komora.DataAccess.Repository
         }
 
         /// <summary>
-        /// Method that updates a ProductRecipe
+        /// Method that updates a MenuRecipe
         /// </summary>
         /// <param name="obj">
-        /// ProductRecipe to be updated
+        /// MenuRecipe to be updated
         /// </param>
         public void Update(MenuRecipe obj)
         {

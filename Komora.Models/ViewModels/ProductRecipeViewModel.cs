@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Komora.Models.ViewModels
 {
+    /// <summary>
+    /// ViewModel for ProductRecipe
+    /// </summary>
     public class ProductRecipeViewModel
     {
         public int ProductId { get; set; }

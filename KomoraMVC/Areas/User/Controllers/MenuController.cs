@@ -28,6 +28,8 @@ namespace Komora.Areas.User.Controllers
         /// Constructor that initializes the unitOfWork
         /// </summary>
         /// <param name="unitOfWork"></param>
+        /// <param name="hostingEnvironment"></param>
+        /// <param name="unitOfWork"></param>
         public MenuController(IUnitOfWork unitOfWork, IWebHostEnvironment hostingEnvironment, ApplicationDbContext db)
         {
             this._unitOfWork = unitOfWork;
@@ -50,13 +52,13 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// Method that returns the view with the form to create or update a product
+        /// Method that returns the view with the form to create or update a menu
         /// </summary>
         /// <param name="id">
-        /// id of the product to be updated
+        /// id of the menu to be updated or created
         /// </param>
         /// <returns>
-        /// View with the form to create or update a product
+        /// View with the form to create or update a menu
         /// </returns>
         public IActionResult Upsert(int? id)
         {
@@ -112,13 +114,10 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpPost method that creates or updates a product
+        /// HttpPost method that creates or updates a menu
         /// </summary>
         /// <param name="obj">
-        /// product to be created or updated
-        /// </param>
-        /// <param name="file">
-        /// Image of product
+        /// menu to be created or updated
         /// </param>
         /// <returns></returns>
         [HttpPost]
@@ -237,7 +236,12 @@ namespace Komora.Areas.User.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Method that calculates the orders for a menu
+        /// </summary>
+        /// <param name="menuVM">menu ViewModel</param>
+        /// <param name="tolerance">tolerance</param>
+        /// <returns></returns>
         public List<OrderVM> CalculateOrders(MenuVM menuVM, double tolerance)
         {
 
@@ -322,6 +326,12 @@ namespace Komora.Areas.User.Controllers
             }
         }
 
+        /// <summary>
+        /// Method that calculates the plan quantities for a menu
+        /// </summary>
+        /// <param name="menuVM">menu ViewModel</param>
+        /// <param name="tolerance">tolerance</param>
+        /// <returns></returns>
         public List<OrderVM> CalculatePlanQuan(MenuVM menuVM, double tolerance)
         {
 
@@ -401,7 +411,11 @@ namespace Komora.Areas.User.Controllers
 
 
 
-
+        /// <summary>
+        /// HttpDelete method that deletes a menu recipe
+        /// </summary>
+        /// <param name="id">if of menurecipe</param>
+        /// <returns></returns>
         [HttpDelete]
         public IActionResult DeleteMenuRecipe(int? id)
         {
@@ -424,9 +438,9 @@ namespace Komora.Areas.User.Controllers
         }
 
         /// <summary>
-        /// HttpDelete method that deletes a category
+        /// HttpDelete method that deletes a menu
         /// </summary>
-        /// <param name="id">id of the category to be deleted</param>
+        /// <param name="id">id of the menu to be deleted</param>
         /// <returns></returns>
         [HttpDelete]
         public IActionResult Delete(int? id)
@@ -481,6 +495,10 @@ namespace Komora.Areas.User.Controllers
             return Json(new { success = true, message = "Delete Successful" });
         }
 
+        /// <summary>
+        /// HttpGet method that gets all menus for a user in JSON format
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -491,15 +509,7 @@ namespace Komora.Areas.User.Controllers
             return Json(new { data = objMenuList });
         }
 
-        [HttpGet]
-        public IActionResult GetAllById()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            List<Menu> objMenuList = _unitOfWork.Menu.GetAll(u => u.UserId == userId, includeProperties: "Meal,Recipe").ToList();
-            return Json(new { data = objMenuList });
-        }
+        
     }
 }
 

@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Komora.Models
 {
+    /// <summary>
+    /// Model for InventoryItem
+    /// </summary>
     public class InventoryItem
     {
         [Key]
